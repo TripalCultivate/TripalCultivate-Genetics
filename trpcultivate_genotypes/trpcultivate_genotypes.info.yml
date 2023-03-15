@@ -1,0 +1,9 @@
+name: Genotypic Data
+type: module
+description: Expands Chado to support large-scale genotypic data.
+package: "TripalCultivate: Genetics"
+core_version_requirement: ^9 || ^10
+dependencies:
+  - tripal
+  - tripal_chado
+  - trpcultivate_genetics

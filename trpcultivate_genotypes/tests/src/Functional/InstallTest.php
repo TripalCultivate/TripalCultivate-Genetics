@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\trpcultivate_genetics\Functional;
+namespace Drupal\Tests\trpcultivate_genotypes\Functional;
 
 use Drupal\Core\Url;
 use Drupal\Tests\tripal_chado\Functional\ChadoTestBrowserBase;
@@ -20,23 +20,23 @@ class InstallTest extends ChadoTestBrowserBase {
    *
    * @var array
    */
-  protected static $modules = ['help', 'trpcultivate_genetics'];
+  protected static $modules = ['help', 'trpcultivate_genotypes'];
 
   /**
    * The name of your module in the .info.yml
    */
-  protected static $module_name = 'Genetic Data API';
+  protected static $module_name = 'Genotypic Data';
 
   /**
    * The machine name of this module.
    */
-  protected static $module_machinename = 'trpcultivate_genetics';
+  protected static $module_machinename = 'trpcultivate_genotypes';
 
   /**
    * A small excert from your help page.
    * Do not cross newlines.
    */
-  protected static $help_text_excerpt = 'speed/ease of flat file storage and querying via the Variant Call Format';
+  protected static $help_text_excerpt = ' module expands Chado to support large-scale';
 
   /**
    * Tests that a specific set of pages load with a 200 response.
