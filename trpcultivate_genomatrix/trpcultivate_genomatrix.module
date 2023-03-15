@@ -13,7 +13,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 function trpcultivate_genomatrix_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     // Provides the module overview in the help tab.
-    case 'help.page.trpgeno_genomatrix':
+    case 'help.page.trpcultivate_genomatrix':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
 
