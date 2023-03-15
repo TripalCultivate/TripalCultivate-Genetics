@@ -13,8 +13,16 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <coverage>
     <include>
-      <directory suffix=".php">trpcultivate_genetics/src</directory>
+     <directory suffix=".php">trpcultivate_genetics/src</directory>
       <file>trpcultivate_genetics/trpcultivate_genetics.module</file>
+     <directory suffix=".php">trpcultivate_genotypes/src</directory>
+      <file>trpcultivate_genotypes/trpcultivate_genotypes.module</file>
+     <directory suffix=".php">trpcultivate_genomatrix/src</directory>
+      <file>trpcultivate_genomatrix/trpcultivate_genomatrix.module</file>
+     <directory suffix=".php">trpcultivate_qtl/src</directory>
+      <file>trpcultivate_qtl/trpcultivate_qtl.module</file>
+     <directory suffix=".php">trpcultivate_vcf/src</directory>
+      <file>trpcultivate_vcf/trpcultivate_vcf.module</file>
     </include>
   </coverage>
   <php>
@@ -50,6 +58,14 @@
   <testsuites>
     <testsuite name="core">
       <directory>trpcultivate_genetics/tests</directory>
+    </testsuite>
+   <testsuite name="genotypes">
+      <directory>trpcultivate_genotypes/tests</directory>
+      <directory>trpcultivate_genomatrix/tests</directory>
+      <directory>trpcultivate_vcf/tests</directory>
+    </testsuite>
+   <testsuite name="QTL">
+      <directory>trpcultivate_qtl/tests</directory>
     </testsuite>
   </testsuites>
   <listeners>
