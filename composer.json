@@ -1,0 +1,29 @@
+{
+  "name": "tripalcultivate/genetics",
+  "type": "drupal-module",
+  "description": "A Tripal extension module that provides support for large-scale genotypic data, genetic maps, and QTL with importers, content pages and visualizations.",
+  "keywords": ["tripal", "drupal", "biological-data", "genotypic-data", "QTL", "GWAS", "Genetic Maps", "visualization", "data-import"],
+  "homepage": "https://github.com/TripalCultivate/TripalCultivate-Genetics",
+  "support": {
+    "issues": "https://github.com/TripalCultivate/TripalCultivate-Genetics/issues"
+  },
+  "license": "GPL-3.0-or-later",
+  "minimum-stability": "dev",
+  "authors": [
+        {
+            "name": "Lacey-Anne Sanderson",
+            "homepage": "https://github.com/laceysanderson/",
+            "role": "Lead Developer"
+        },
+        {
+            "name": "Carolyn Caron",
+            "homepage": "https://github.com/carolyncaron",
+            "role": "Lead Developer"
+        }
+  ],
+  "require": {
+    "php": "^8.0",
+    "drupal/core": "^9.4",
+    "tripal/tripal": "^4.0-alpha1"
+  }
+}

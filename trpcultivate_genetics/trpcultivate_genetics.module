@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains all hook implementations for this module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function trpcultivate_genetics_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Provides the module overview in the help tab.
+    case 'help.page.trpcultivate_genetics':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+
+      $output .= '<ul>'
+        . '<li>' . t('Genetic maps, markers, sequence variants and QTL
+      - Large-scale genotypic datasets with both') . '</li>'
+        . '<ul>'
+          . '<li>' . t('the power of a relational database for tight integration with germplasm, phenotypic data and cross data type tools') . '</li>'
+          . '<li>' . t('the speed/ease of flat file storage and querying via the Variant Call Format (VCF)') . '</li>'
+        . '</ul>'
+        . '<li>' . t('Genotype Matrix tool for quick visual querying of genotypic differences between germplasm in smaller regions (e.g. QTL or GWAS peak)') . '</li>'
+        . '<li>' . t('Management of metadata for VCF files including a form for researchers to filter and download the results in multiple formats.')  . '</li>'
+      . '</ul>';
+
+      return $output;
+
+    default:
+  }
+}

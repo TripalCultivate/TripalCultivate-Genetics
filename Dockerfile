@@ -1,9 +1,9 @@
 FROM tripalproject/tripaldocker:latest
 MAINTAINER Lacey-Anne Sanderson <lacey.sanderson@usask.ca>
 
-COPY . /var/www/drupal9/web/modules/template
+COPY . /var/www/drupal9/web/modules/TripalCultivate-Genetics
 
-WORKDIR /var/www/drupal9/web/modules/template
+WORKDIR /var/www/drupal9/web/modules/TripalCultivate-Genetics
 
 ## RUN service postgresql restart \
-##  && drush en trpgeno_genetics trpgeno_genotypes trpgeno_genomatrix trpgeno_qtl trpgeno_vcf --yes
+##  && drush en trpcultivate_genetics --yes
