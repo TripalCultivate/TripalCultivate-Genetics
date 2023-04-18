@@ -18,6 +18,13 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   protected $organism_id;
 
   /**
+   * The chado.project.project_id that these genotypes are grouped under.
+   * This must already exist.
+   * @var integer
+   */
+  protected $project_id;
+
+  /**
    * {@inheritdoc}
    */
   public function label() {
@@ -38,6 +45,21 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
 
     $this->organism_id = $organism_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setProjectID( integer $project_id ) {
+    
+    // Do validation - throw exception if not valid
+    if(false) {
+      throw new \Exception(
+        t("The project must already exist but a project_id of @project was provided." , ['@project'=>$project_id])
+      );
+    }
+
+    $this->project_id = $project_id;
   }
 
 }
