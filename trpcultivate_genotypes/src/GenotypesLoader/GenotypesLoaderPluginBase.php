@@ -65,9 +65,9 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     return (string) $this->pluginDefinition['label'];
   }
 
-  /****************************************
-   *  -------- Setter functions --------  *
-   ****************************************/
+  /****************************************************************************
+   *  Setter functions
+   ****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -157,5 +157,51 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
 
     $this->sample_file = $sample_file;
+  }
+
+  /****************************************************************************
+   *  Getter functions
+   ****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getOrganismID() {
+    return $this->organism_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getProjectID() {
+    return $this->project_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getVariantSubTypeID() {
+    return $this->variant_subtype_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getMarkerSubTypeID() {
+    return $this->marker_subtype_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getInputFilepath() {
+    return $this->input_file;
+  }
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getSampleFilepath() {
+    return $this->sample_file;
   }
 }
