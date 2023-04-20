@@ -82,6 +82,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
 
     $this->organism_id = $organism_id;
+
+    return TRUE;
   }
 
   /**
