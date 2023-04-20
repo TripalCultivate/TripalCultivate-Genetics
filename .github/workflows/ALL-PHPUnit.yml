@@ -4,7 +4,7 @@ on: [push]
 
 env:
   PKG_NAME: TripalCultivate-Genetics
-  MODULES: "trpcultivate_genetics"
+  MODULES: "trpcultivate_genetics trpcultivate_genotypes trpcultivate_genomatrix trpcultivate_qtl trpcultivate_vcf"
 
 jobs:
   run-tests:
