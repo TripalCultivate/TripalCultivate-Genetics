@@ -14,7 +14,7 @@ jobs:
         uses: tripal/test-tripal-action@v1.0
         with:
           directory-name: 'TripalCultivate-Genetics'
-          modules: 'trpcultivate_genetics'
+          modules: 'trpcultivate_genetics trpcultivate_genotypes trpcultivate_genomatrix trpcultivate_qtl trpcultivate_vcf'
           php-version: '8.0'
           pgsql-version: '13'
           drupal-version: '9.4.x-dev'
