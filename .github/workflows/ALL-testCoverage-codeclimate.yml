@@ -4,7 +4,7 @@ on: [push]
 
 env:
   PKG_NAME: TripalCultivate-Genetics
-  MODULES: "trpcultivate_genetics"
+  MODULES: "trpcultivate_genetics trpcultivate_genotypes trpcultivate_genomatrix trpcultivate_qtl trpcultivate_vcf"
   IMAGE_TAG: drupal9.5.x-dev-php8.1-pgsql13
   SIMPLETEST_BASE_URL: "http://localhost"
   SIMPLETEST_DB: "pgsql://drupaladmin:drupal9developmentonlylocal@localhost/sitedb"
