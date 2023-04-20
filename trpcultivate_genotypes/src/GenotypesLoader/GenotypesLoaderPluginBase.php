@@ -72,7 +72,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * {@inheritdoc}
    */
-  public function setOrganismID( integer $organism_id ) {
+  public function setOrganismID( int $organism_id ) {
     
     // Do validation - throw exception if not valid
     if(false) {
@@ -87,7 +87,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * {@inheritdoc}
    */
-  public function setProjectID( integer $project_id ) {
+  public function setProjectID( int $project_id ) {
     
     // Do validation - throw exception if not valid
     if(false) {
@@ -102,7 +102,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * {@inheritdoc}
    */
-  public function setVariantSubTypeID( integer $cvterm_id ) {
+  public function setVariantSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
     if(false) {
@@ -117,7 +117,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * {@inheritdoc}
    */
-  public function setMarkerSubTypeID( integer $cvterm_id ) {
+  public function setMarkerSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
     if(false) {
