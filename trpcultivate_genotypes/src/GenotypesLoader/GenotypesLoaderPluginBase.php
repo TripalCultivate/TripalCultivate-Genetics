@@ -80,9 +80,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("The organism must already exist but an organism_id of @organism was provided." , ['@organism'=>$organism_id])
       );
     }
-
     $this->organism_id = $organism_id;
-
     return TRUE;
   }
 
@@ -97,8 +95,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("The project must already exist but a project_id of @project was provided." , ['@project'=>$project_id])
       );
     }
-
     $this->project_id = $project_id;
+    return TRUE;
   }
 
   /**
@@ -112,8 +110,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("The variant subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
     }
-
     $this->variant_subtype_id = $cvterm_id;
+    return TRUE;
   }
 
   /**
@@ -127,8 +125,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("The marker subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
     }
-
     $this->marker_subtype_id = $cvterm_id;
+    return TRUE;
   }
 
   /**
@@ -142,8 +140,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("The input file must already exist but a filepath of @file was provided." , ['@file'=>$input_file])
       );
     }
-
     $this->input_file = $input_file;
+    return TRUE;
   }
 
   /**
@@ -157,8 +155,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("The samples file must already exist but a filepath of @file was provided." , ['@file'=>$sample_file])
       );
     }
-
     $this->sample_file = $sample_file;
+    return TRUE;
   }
 
   /****************************************************************************
