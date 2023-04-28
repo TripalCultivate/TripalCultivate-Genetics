@@ -75,7 +75,15 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setOrganismID( int $organism_id ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Open a db connection and query the provided organism ID
+    $connection = \Drupal::service('tripal_chado.database');
+    $query = $connection->select('1:organism', 'o');
+    $query->fields('o', ['organism_id']);
+    $query->condition('o.organism_id', $organism_id, '=');
+    $result = $query->execute();
+
+    // Ensure the organism ID exists
+    if(!$result) {
       throw new \Exception(
         t("The organism must already exist but an organism_id of @organism was provided." , ['@organism'=>$organism_id])
       );
@@ -90,7 +98,15 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setProjectID( int $project_id ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Open a db connection and query the provided project ID
+    $connection = \Drupal::service('tripal_chado.database');
+    $query = $connection->select('1:project', 'p');
+    $query->fields('p', ['project_id']);
+    $query->condition('p.project_id', $project_id, '=');
+    $result = $query->execute();
+
+    // Ensure the project ID exists
+    if(!$result) {
       throw new \Exception(
         t("The project must already exist but a project_id of @project was provided." , ['@project'=>$project_id])
       );
