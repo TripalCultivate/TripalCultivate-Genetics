@@ -121,7 +121,15 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setVariantSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Open a db connection and query the provided cvterm ID
+    $connection = \Drupal::service('tripal_chado.database');
+    $query = $connection->select('1:cvterm', 'cvt');
+    $query->fields('cvt', ['cvterm_id']);
+    $query->condition('cvt.cvterm_id', $cvterm_id, '=');
+    $result = $query->execute();
+
+    // Ensure the cvterm ID exists
+    if(!$result)
       throw new \Exception(
         t("The variant subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
@@ -136,7 +144,15 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setMarkerSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Open a db connection and query the provided cvterm ID
+    $connection = \Drupal::service('tripal_chado.database');
+    $query = $connection->select('1:cvterm', 'cvt');
+    $query->fields('cvt', ['cvterm_id']);
+    $query->condition('cvt.cvterm_id', $cvterm_id, '=');
+    $result = $query->execute();
+
+    // Ensure the cvterm ID exists
+    if(!$result)
       throw new \Exception(
         t("The marker subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
