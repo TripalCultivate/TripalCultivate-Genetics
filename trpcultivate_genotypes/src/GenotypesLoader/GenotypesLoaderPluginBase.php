@@ -129,7 +129,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $result = $query->execute();
 
     // Ensure the cvterm ID exists
-    if(!$result)
+    if(!$result) {
       throw new \Exception(
         t("The variant subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
@@ -152,7 +152,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $result = $query->execute();
 
     // Ensure the cvterm ID exists
-    if(!$result)
+    if(!$result) {
       throw new \Exception(
         t("The marker subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
