@@ -167,11 +167,21 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setInputFilepath( string $input_file ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Check if file exists
+    if(!file_exists($input_file)) {
       throw new \Exception(
         t("The input file must already exist but a filepath of @file was provided." , ['@file'=>$input_file])
       );
     }
+
+    // Check that the file can be opened (eg. due to permissions or corruption)
+    $result = is_readable($input_file);
+    if (!$result) {
+      throw new \Exception(
+        t("The input file (@file) exists but is not readable. Check for permissions or if it is corrupt." , ['@file'=>$input_file])
+      );
+    }
+
     $this->input_file = $input_file;
     return TRUE;
   }
@@ -182,9 +192,18 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setSampleFilepath( string $sample_file ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Check if file exists
+    if(!file_exists($sample_file)) {
       throw new \Exception(
         t("The samples file must already exist but a filepath of @file was provided." , ['@file'=>$sample_file])
+      );
+    }
+
+    // Check that the file can be opened (eg. due to permissions or corruption)
+    $result = is_readable($sample_file);
+    if (!$result) {
+      throw new \Exception(
+        t("The samples file (@file) exists but is not readable. Check for permissions or if it is corrupt." , ['@file'=>$sample_file])
       );
     }
     $this->sample_file = $sample_file;

@@ -1,0 +1,4 @@
+##fileformat=VCFv4.0
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	Ross	Prado	Ash	Piero	Tai	Beverly	Argent	Trenus	Zapelli
+1A	11111	.	A	G,C	29	PASS	.	GT:DP	0/0:10	0/0:9	0/0:8	0/1:9	./.	1/1:5	0/1:11	0/0:3	1/1:6
+1A	22222	Catscription Factor 1	T	C,A	36	PASS	.	GT:DP	1/1:5	0/0:7	0/0:15	./.	0/0:8	0/1:5	0/0:1	0/1:13	0/0:6

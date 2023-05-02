@@ -100,7 +100,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $this->assertEquals($marker_cvterm_id, $grabbed_marker_cvterm_id, "The marker_cvterm_id using the getter method does not match.");
 
     // Input Filepath
-    $input_file_path = "/this/is/fake/path";
+    $input_file_path = __DIR__ . '/../../Fixtures/cats.vcf';
 
     // Set input filepath
     $success = $plugin->setInputFilepath($input_file_path);
@@ -111,7 +111,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $this->assertEquals($input_file_path, $grabbed_input_file_path, "The input filepath grabbed by the getter method does not match.");
 
     // Sample Filepath
-    $sample_file_path = "/this/is/fake/sample/path";
+    $sample_file_path = __DIR__ . '/../../Fixtures/cats_samples.tsv';
 
     // Set sample filepath
     $success = $plugin->setSampleFilepath($sample_file_path);
