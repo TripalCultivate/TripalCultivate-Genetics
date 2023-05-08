@@ -184,7 +184,15 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setVariantSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Open a db connection and query the provided cvterm ID
+    $connection = \Drupal::service('tripal_chado.database');
+    $query = $connection->select('1:cvterm', 'cvt');
+    $query->fields('cvt', ['cvterm_id']);
+    $query->condition('cvt.cvterm_id', $cvterm_id, '=');
+    $result = $query->execute();
+
+    // Ensure the cvterm ID exists
+    if(!$result) {
       throw new \Exception(
         t("The variant subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
@@ -199,7 +207,15 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setMarkerSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Open a db connection and query the provided cvterm ID
+    $connection = \Drupal::service('tripal_chado.database');
+    $query = $connection->select('1:cvterm', 'cvt');
+    $query->fields('cvt', ['cvterm_id']);
+    $query->condition('cvt.cvterm_id', $cvterm_id, '=');
+    $result = $query->execute();
+
+    // Ensure the cvterm ID exists
+    if(!$result) {
       throw new \Exception(
         t("The marker subtype must already exist but a cvterm_id of @cvterm was provided." , ['@cvterm'=>$cvterm_id])
       );
@@ -214,11 +230,21 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setInputFilepath( string $input_file ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Check if file exists
+    if(!file_exists($input_file)) {
       throw new \Exception(
         t("The input file must already exist but a filepath of @file was provided." , ['@file'=>$input_file])
       );
     }
+
+    // Check that the file can be opened (eg. due to permissions or corruption)
+    $result = is_readable($input_file);
+    if (!$result) {
+      throw new \Exception(
+        t("The input file (@file) exists but is not readable. Check for permissions or if it is corrupt." , ['@file'=>$input_file])
+      );
+    }
+
     $this->input_file = $input_file;
     return TRUE;
   }
@@ -229,9 +255,18 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setSampleFilepath( string $sample_file ) {
     
     // Do validation - throw exception if not valid
-    if(false) {
+    // Check if file exists
+    if(!file_exists($sample_file)) {
       throw new \Exception(
         t("The samples file must already exist but a filepath of @file was provided." , ['@file'=>$sample_file])
+      );
+    }
+
+    // Check that the file can be opened (eg. due to permissions or corruption)
+    $result = is_readable($sample_file);
+    if (!$result) {
+      throw new \Exception(
+        t("The samples file (@file) exists but is not readable. Check for permissions or if it is corrupt." , ['@file'=>$sample_file])
       );
     }
     $this->sample_file = $sample_file;
