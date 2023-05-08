@@ -34,4 +34,17 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
     $this->setCacheBackend($cache_backend, 'genotypes_loader_plugins');
   }
 
+  public setParameters() {
+    // Chooses plugin implementation based on parameters (e.g. VCF implementation for VCF file format)
+
+    // Creates a GenotypesLoader object for that implementation (e.g. returns VCFGenotypesLoader which inherits from GenotypesLoader)
+    // $collection = $this->createInstance($pluginId, ["collection_name" => $name]);
+
+    // Uses the Base Class setter methods to set the parameters on that object
+
+    // Catches any exceptions which indicate validation errors and reports back to caller of plugin manager these errors
+
+    // Returns the fully initialized GenotypesLoader object for that implementation (only if there were no errors)
+  }
+
 }
