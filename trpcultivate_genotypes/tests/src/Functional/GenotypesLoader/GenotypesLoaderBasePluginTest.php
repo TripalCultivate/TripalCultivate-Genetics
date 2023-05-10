@@ -122,6 +122,17 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $grabbed_marker_cvterm_id = $plugin->getMarkerSubTypeID();
     $this->assertEquals($marker_cvterm_id, $grabbed_marker_cvterm_id, "The marker_cvterm_id using the getter method does not match.");
 
+    // Assign the file type of the input file
+    $input_file_type = 'vcf';
+    
+    // Set method for input file type
+    $success = $plugin->setInputFileType($input_file_type);
+    $this->assertTrue($success, "Unable to set file type for the input file");
+
+    // Get method for input file type
+    $grabbed_input_file_type = $plugin->getInputFileType();
+    $this->assertEquals($input_file_type, $grabbed_input_file_type, "The input file type grabbed using the getter method does not match.");
+
     // Input Filepath
     $input_file_path = __DIR__ . '/../../Fixtures/cats.vcf';
 

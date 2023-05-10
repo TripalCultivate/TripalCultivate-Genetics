@@ -48,6 +48,14 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   protected $marker_subtype_id;
 
   /**
+   * The type of input file containing the genotypes
+   * Currently, this must be one of: vcf, matrix, legacy
+   * 
+   * @var string
+   */
+  protected $file_type;
+
+  /**
    * The filepath of the input file containing the genotypes
    * 
    * @var string
@@ -227,6 +235,29 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * {@inheritdoc}
    */
+  public function setInputFileType( string $file_type ) {
+
+    // Do validation - throw exception if not valid
+    // Check if the file type is set to one of vcf, matrix or legacy
+    $valid_file_types = array(
+      "vcf", 
+      "matrix", 
+      "legacy"
+    );
+    if(!in_array($file_type, $valid_file_types)) {
+      throw new \Exception(
+        t("The input file must be one of: vcf, matrix or legacy. A type of @type was provided." , ['@type'=>$file_type])
+      );
+    }
+
+    $this->file_type = $file_type;
+    return TRUE;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
   public function setInputFilepath( string $input_file ) {
     
     // Do validation - throw exception if not valid
@@ -303,6 +334,13 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    */ 
   public function getMarkerSubTypeID() {
     return $this->marker_subtype_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */ 
+  public function getInputFileType() {
+    return $this->file_type;
   }
 
   /**
