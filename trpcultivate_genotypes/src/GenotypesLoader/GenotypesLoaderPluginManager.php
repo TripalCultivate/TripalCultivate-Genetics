@@ -34,9 +34,25 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
     $this->setCacheBackend($cache_backend, 'genotypes_loader_plugins');
   }
 
-  public setParameters() {
+  /**
+   * Create plugin and set its parameters.
+   * 
+   * @param array $options
+   *   An array of options that can be used to determine a suitable plugin to instantiate and how to configure it.
+   *    - organism_id: The chado.stock.organism_id of the samples in the samples file.
+   *    - project_id: The chado.project.project_id that these genotypes are grouped under.
+   *    - variant_subtype_id: The cvterm_id of the subtype of variant of the genotypes being inserted.
+   *    - marker_subtype_id: The cvterm_id of the subtype of marker of the genotypes being inserted.
+   *    - input_file_type: one of "vcf", "matrix", "legacy".
+   *    - input_filepath: The filepath of the input file containing the genotypes.
+   *    - sample_filepath: The filepath of the tab-delimited file specifying each sample name in the genotypes file.
+   * @return object|false 
+   *   A fully configured plugin instance. The interface of the plugin instance will depend on the plugin type. 
+   *   If no instance can be retrieved, FALSE will be returned.
+   */
+  public function setParameters(array $options) {
     // Chooses plugin implementation based on parameters (e.g. VCF implementation for VCF file format)
-
+    //print_r($this->getDefinitions());
     // Creates a GenotypesLoader object for that implementation (e.g. returns VCFGenotypesLoader which inherits from GenotypesLoader)
     // $collection = $this->createInstance($pluginId, ["collection_name" => $name]);
 

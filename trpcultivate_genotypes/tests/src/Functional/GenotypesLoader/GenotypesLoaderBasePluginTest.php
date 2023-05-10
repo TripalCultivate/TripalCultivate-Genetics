@@ -30,7 +30,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
    * 
    * @group GenotypesLoader
    */
-  public function testGenotypesLoaderPluginBaseGetSet(){
+  public function testGenotypesLoaderPluginBase(){
 
     // Ensure we see all logging in tests.
     \Drupal::state()->set('is_a_test_environment', TRUE);
