@@ -27,7 +27,7 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
       'Plugin/GenotypesLoader',
       $namespaces,
       $module_handler,
-      'Drupal\trpcultivate_genotypes\GenotypesLoaderInterface',
+      'Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface',
       'Drupal\trpcultivate_genotypes\Annotation\GenotypesLoader'
     );
     $this->alterInfo('genotypes_loader_info');
@@ -51,16 +51,52 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
    *   If no instance can be retrieved, FALSE will be returned.
    */
   public function setParameters(array $options) {
+
     // Chooses plugin implementation based on parameters (e.g. VCF implementation for VCF file format)
-    //print_r($this->getDefinitions());
+    // Collect all the plugin IDs that match our input file type
+    $supported_pluginIDs = [];
+    $definitions = $this->getDefinitions();
+    foreach($definitions as $pluginId => $details) {
+      if ($details['input_file_type'] == ($options['input_file_type'])) {
+        $supported_pluginIDs[] = $pluginId;
+      };
+    }
+
+    // Check the size of the supported_pluginIDs array. If multiple values or no values, throw an exception
+    $num_pluginIds = count($supported_pluginIDs);
+    if ($num_pluginIds > 1) {
+      throw new \Exception(
+        t("Found more than one pluginID for input file type of '@type'. This is currently unsupported functionality." , ['@type'=>$options['input_file_type']])
+      );
+    }
+    if ($num_pluginIds == 0) {
+      throw new \Exception(
+        t("Could not find a pluginID for input file type of '@type'." , ['@type'=>$options['input_file_type']])
+      );
+    }
+
     // Creates a GenotypesLoader object for that implementation (e.g. returns VCFGenotypesLoader which inherits from GenotypesLoader)
-    // $collection = $this->createInstance($pluginId, ["collection_name" => $name]);
+    $plugin_instance = $this->createInstance($pluginId, []);
 
     // Uses the Base Class setter methods to set the parameters on that object
-
     // Catches any exceptions which indicate validation errors and reports back to caller of plugin manager these errors
+    try {
+      $plugin_instance->setOrganismID($options['organism_id']);
+      $plugin_instance->setProjectID($options['project_id']);
+      $plugin_instance->setVariantSubtypeID($options['variant_subtype_id']);
+      $plugin_instance->setMarkerSubtypeID($options['marker_subtype_id']);
+      $plugin_instance->setInputFileType($options['input_file_type']);
+      $plugin_instance->setInputFilePath($options['input_filepath']);
+      $plugin_instance->setSampleFilepath($options['sample_filepath']);
+    }
+    catch (Exception $e) { 
+      throw new \Exception(
+        t("Could not set a parameter while instanciating GenotypesLoader: '@pluginId'" , ['@pluginId'=>$pluginId]) . $e->geMessage()
+      );
+    }
 
     // Returns the fully initialized GenotypesLoader object for that implementation (only if there were no errors)
+    return $plugin_instance;
   }
 
 }

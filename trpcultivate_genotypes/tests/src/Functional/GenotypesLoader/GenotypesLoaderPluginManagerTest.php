@@ -43,7 +43,7 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
       "project_id" => "",
       "variant_subtype_id" => "",
       "marker_subtype_id" => "",
-      "input_file_type" => "",
+      "input_file_type" => "vcf",
       "input_filepath" => "",
       "sample_filepath" => ""
     );

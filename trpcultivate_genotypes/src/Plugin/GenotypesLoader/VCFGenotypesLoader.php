@@ -1,8 +1,9 @@
 <?php
 
-namespace Drupal\trpcultivate_genotypes\GenotypesLoader;
+namespace Drupal\trpcultivate_genotypes\Plugin\GenotypesLoader;
 
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginBase;
+use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
 
 /**
  * Provides a plugin for loading genotypes from a VCF file.
@@ -14,7 +15,7 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginBase;
  *    input_file_type = "vcf"
  *  )
  */
-class VCFGenotypesLoader extends GenotypesLoaderPluginBase {
+class VCFGenotypesLoader extends GenotypesLoaderPluginBase implements GenotypesLoaderInterface {
   
   /**
    * 
