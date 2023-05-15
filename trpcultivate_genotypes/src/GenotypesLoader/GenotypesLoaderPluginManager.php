@@ -87,9 +87,9 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
       $plugin_instance->setMarkerSubtypeID($options['marker_subtype_id']);
       $plugin_instance->setInputFileType($options['input_file_type']);
       $plugin_instance->setInputFilePath($options['input_filepath']);
-      $plugin_instance->setSampleFilepath($options['sample_filepath']);
+      $plugin_instance->setSampleFilePath($options['sample_filepath']);
     }
-    catch (Exception $e) { 
+    catch ( \Exception $e ) { 
       throw new \Exception(
         t("Could not set a parameter while instanciating GenotypesLoader: '@pluginId'" , ['@pluginId'=>$pluginId]) . $e->geMessage()
       );
@@ -98,5 +98,4 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
     // Returns the fully initialized GenotypesLoader object for that implementation (only if there were no errors)
     return $plugin_instance;
   }
-
 }
