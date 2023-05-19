@@ -1,0 +1,4 @@
+services:
+  trpcultivate_genotypes.genotypes_loader:
+    class: Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginManager
+    parent: default_plugin_manager
