@@ -356,4 +356,100 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function getSampleFilepath() {
     return $this->sample_file;
   }
+
+  /****************************************************************************
+   *  Other functions
+   ****************************************************************************/
+
+   /**
+    * {@inheritdoc}
+    */
+  public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []) {
+    
+    // Set some variables to abstract mode
+    $select_only = 0;
+    $insert_only = 1;
+    $both = 2;
+
+    // the name of the primary key.
+    $pkey = $table . '_id';
+
+    // Open a db connection
+    $connection = \Drupal::service('tripal_chado.database');
+
+    // First we select the record to see if it already exists.
+    $query = $connection->select('1:' . $table, 't');
+    $query->fields('t', [$table."_id"]);
+    // Iterate through our select_values array
+    foreach($select_values as $key => $value) {
+      $query->condition('t.'.$key, $value, '=');
+    }
+    $record = $query->execute()->fetchAll();
+
+    // If it exists and the mode is 1 (Insert Only) then return an error to drush.
+    if (sizeof($record) == 1) {
+      if ($mode == $insert_only) {
+        tripal_report_error(
+          'genotypes_loader',
+          TRIPAL_ERROR,
+          'Record "@record_type" already exists but you chose to only insert (mode=@mode). Values: '.print_r($select_values, TRUE), 
+          array('@record_type' => $record_type, '@mode' => $mode)
+        );
+        return FALSE;
+      }
+      // Otherwise the mode allows select so return the value of the primary key.
+      else {
+        return $record[0]->{$pkey};
+      }
+    }
+
+    // If more then one result is returned then this is NOT UNIQUE and we should report an
+    // error to the user - not just run with the first one.
+    elseif (sizeof($record) > 1) {
+      tripal_report_error(
+        'genotypes_loader',
+        TRIPAL_ERROR,
+        'Record "@record_type" is not unique. (mode=@mode). Values: ' . print_r($select_values,TRUE), 
+        array('@record_type' => $record_type, '@mode' => $mode)
+      );
+      return FALSE;
+    }
+
+    // If there is no pre-existing sample but we've been given permission to create it,
+    // then insert it
+    elseif ($mode == $both) {
+
+      // If we want to insert values, we can merge our values to have all the information we need
+      $values = array_merge($select_values, $insert_values);
+
+      $record = chado_insert_record($table, $values);
+
+      // If the primary key is available then the insert worked and we can return it.
+      if (isset($record[$pkey])) {
+        return $record[$pkey];
+      }
+      // Otherwise, something went wrong so tell the user
+      else {
+        tripal_report_error(
+          'genotypes_loader',
+          TRIPAL_ERROR,
+          'Tried to insert "@record_type" but the primary key is returned empty (mode=@mode). Values: '.print_r($values,TRUE), 
+          array('@record_type' => $record_type, '@mode' => $mode)
+        );
+        return FALSE;
+      }
+    }
+    // If there is no pre-existing record and we are not allowed to create one
+    // then return an error.
+    else {
+      tripal_report_error(
+        'genotypes_loader',
+        TRIPAL_ERROR,
+        'Record "@record_type" doesn\'t already exist but you chose to only select (mode=@mode). Values: ', 
+        array('@record_type' => $record_type, '@mode' => $mode)
+      );
+      return FALSE;
+    }
+  }
+
 }

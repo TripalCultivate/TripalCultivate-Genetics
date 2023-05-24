@@ -68,11 +68,13 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $doAssertDependencyInjectionClosure();
 
     // Create an organism
+    $genus = "Tripalus";
+    $species = "databasica";
     $organism_id = $connection->insert('1:organism')
       ->fields(['genus', 'species'])
       ->values([
-        'genus' => 'Tripalus',
-        'species' => 'databasica',
+        'genus' => $genus,
+        'species' => $species,
       ])
       ->execute();
 
@@ -85,10 +87,11 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $this->assertEquals($organism_id, $grabbed_organism_id, "The organism_id using the getter method does not match.");
 
     // Create a project
+    $project_name = "Test Project";
     $project_id = $connection->insert('1:project')
       ->fields(['name'])
       ->values([
-        'name' => 'Test Project',
+        'name' => $project_name,
       ])
       ->execute();
 
@@ -154,5 +157,13 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Get sample filepath
     $grabbed_sample_file_path = $plugin->getSampleFilepath();
     $this->assertEquals($sample_file_path, $grabbed_sample_file_path, "The sample filepath grabbed by the getter method does not match.");
+
+    // Get the primary key of the organism we created using getRecordPkey()
+    $organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
+      'genus' => $genus,
+      'species' => $species
+    ));
+    $this->assertEquals($organism_id, $grabbed_organism_id, "The organism Id grabbed by getRecordPkey() does not match.");
+
   }
 }
