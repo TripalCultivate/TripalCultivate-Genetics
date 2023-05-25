@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - 4.x
-      - customize-template
+      - g5.18-updateTestingGrid
 jobs:
   run-tests:
     runs-on: ubuntu-latest
