@@ -16,7 +16,7 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
  */
 class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
 
-  protected $defaultTheme = 'stable';
+  protected $defaultTheme = 'stark';
 
   /**
    * Modules to enable.
@@ -27,7 +27,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
 
   /**
    * Test a fake instance of Genotypes Loader Plugin.
-   * 
+   *
    * @group GenotypesLoader
    */
   public function testGenotypesLoaderPluginBase(){
@@ -106,7 +106,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Set method for Variant Subtype ID
     $success = $plugin->setVariantSubTypeID($variant_cvterm_id);
     $this->assertTrue($success, "Unable to set cvterm_id for variant subtype");
-    
+
     // Get method for Variant Subtype ID
     $grabbed_variant_cvterm_id = $plugin->getVariantSubTypeID();
     $this->assertEquals($variant_cvterm_id, $grabbed_variant_cvterm_id, "The variant_cvterm_id using the getter method does not match.");
@@ -117,14 +117,14 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Set method for Marker Subtype ID
     $success = $plugin->setMarkerSubTypeID($marker_cvterm_id);
     $this->assertTrue($success, "Unable to set cvterm_id for marker subtype");
-    
+
     // Get method for Marker Subtype ID
     $grabbed_marker_cvterm_id = $plugin->getMarkerSubTypeID();
     $this->assertEquals($marker_cvterm_id, $grabbed_marker_cvterm_id, "The marker_cvterm_id using the getter method does not match.");
 
     // Assign the file type of the input file
     $input_file_type = 'vcf';
-    
+
     // Set method for input file type
     $success = $plugin->setInputFileType($input_file_type);
     $this->assertTrue($success, "Unable to set file type for the input file");
