@@ -165,5 +165,62 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     ));
     $this->assertEquals($organism_id, $grabbed_organism_id, "The organism Id grabbed by getRecordPkey() does not match.");
 
+    // Try to insert a record that already exists and catch the expected exception
+    $exception_thrown = FALSE;
+    try {
+      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array(
+        'genus' => $genus,
+        'species' => $species
+      ));
+    } 
+    catch ( \Exception $e ) { 
+      $exception_thrown = TRUE;
+    }
+    $this->assertEquals($exception_thrown, TRUE);
+
+    // Enter a duplicate record to trigger an exception
+    $organism_id = $connection->insert('1:organism')
+    ->fields(['genus', 'species'])
+    ->values([
+      'genus' => $genus,
+      'species' => $species,
+    ])
+    ->execute();
+
+    $exception_thrown = FALSE;
+    try {
+      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 2, array(
+        'genus' => $genus,
+        'species' => $species
+      ));
+    }
+    catch ( \Exception $e ) { 
+      $exception_thrown = TRUE;
+    }
+    $this->assertEquals($exception_thrown, TRUE);
+
+    // Test if we can select a record that does not exist, and catch the exception 
+    $exception_thrown = FALSE;
+    try {
+      $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
+        'genus' => "Felis",
+        'species' => "silvestris"
+      ));
+    }
+    catch ( \Exception $e ) { 
+      $exception_thrown = TRUE;
+    }
+    $this->assertEquals($exception_thrown, TRUE);
+
+    // Now that we confirmed the new record doesn't exist, try to insert it
+    $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array('genus' => "Felis"), array('species' => "silvestris"));
+
+    // Select it again to confirm that it now exists
+    $select_new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
+      'genus' => "Felis",
+      'species' => "silvestris"
+    ));
+    $this->assertEquals($new_organism_id, $select_new_organism_id);
+
   }
 }
