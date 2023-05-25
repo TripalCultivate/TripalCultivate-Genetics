@@ -16,7 +16,7 @@ use Drupal\trpcultivate_genotypes\Plugin\GenotypesLoader\VCFGenotypesLoader;
  */
 class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
 
-  protected $defaultTheme = 'stable';
+  protected $defaultTheme = 'stark';
 
   /**
    * Modules to enable.
@@ -27,11 +27,11 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
 
   /**
    * Test a fake instance of Genotypes Loader Plugin.
-   * 
+   *
    * @group GenotypesLoader
    */
   public function testGenotypesLoaderPluginManager(){
-    
+
     // Ensure we see all logging in tests.
     \Drupal::state()->set('is_a_test_environment', TRUE);
 
@@ -101,7 +101,7 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
     $exception_caught = false;
     try {
       $new_plugin = $plugin_manager->setParameters($options);
-    } 
+    }
     catch ( \Exception $e ) {
       $exception_caught = true;
     }
