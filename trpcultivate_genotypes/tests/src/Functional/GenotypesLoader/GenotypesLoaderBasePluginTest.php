@@ -158,6 +158,9 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $grabbed_sample_file_path = $plugin->getSampleFilepath();
     $this->assertEquals($sample_file_path, $grabbed_sample_file_path, "The sample filepath grabbed by the getter method does not match.");
 
+    /****************************************************************************
+     *  TESTS for method getRecordPkey()
+     ****************************************************************************/
     // Get the primary key of the organism we created using getRecordPkey()
     $organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
       'genus' => $genus,
@@ -165,8 +168,21 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     ));
     $this->assertEquals($organism_id, $grabbed_organism_id, "The organism Id grabbed by getRecordPkey() does not match.");
 
+    // Try to select a record using an invalid mode
+    $exception_caught = FALSE;
+    try {
+      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 5, array(
+        'genus' => $genus,
+        'species' => $species
+      ));
+    }
+    catch ( \Exception $e ) { 
+      $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for using an inavlid mode (5).");
+
     // Try to insert a record that already exists and catch the expected exception
-    $exception_thrown = FALSE;
+    $exception_caught = FALSE;
     try {
       $organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array(
         'genus' => $genus,
@@ -174,9 +190,9 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
       ));
     } 
     catch ( \Exception $e ) { 
-      $exception_thrown = TRUE;
+      $exception_caught = TRUE;
     }
-    $this->assertEquals($exception_thrown, TRUE);
+    $this->assertTrue($exception_caught, "Did not catch exception for trying to insert a duplicate.");
 
     // Enter a duplicate record to trigger an exception
     $organism_id = $connection->insert('1:organism')
@@ -187,7 +203,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     ])
     ->execute();
 
-    $exception_thrown = FALSE;
+    $exception_caught = FALSE;
     try {
       $organism_id = $plugin->getRecordPkey('Organism', 'organism', 2, array(
         'genus' => $genus,
@@ -195,12 +211,26 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
       ));
     }
     catch ( \Exception $e ) { 
-      $exception_thrown = TRUE;
+      $exception_caught = TRUE;
     }
-    $this->assertEquals($exception_thrown, TRUE);
+    $this->assertTrue($exception_caught, "Did not catch exception for attempting to select/insert a record that was already duplicated.");
+
+    // Try to insert an organism with improper values to trigger an exception
+    $exception_caught = FALSE;
+    try {
+      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array(
+        'genus' => $genus,
+        'species' => $species,
+        'blah' => "blah"
+      ));
+    }
+    catch ( \Exception $e ) { 
+      $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for inserting a record with an invalid field.");
 
     // Test if we can select a record that does not exist, and catch the exception 
-    $exception_thrown = FALSE;
+    $exception_caught = FALSE;
     try {
       $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
         'genus' => "Felis",
@@ -208,9 +238,9 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
       ));
     }
     catch ( \Exception $e ) { 
-      $exception_thrown = TRUE;
+      $exception_caught = TRUE;
     }
-    $this->assertEquals($exception_thrown, TRUE);
+    $this->assertTrue($exception_caught, "Did not catch exception for selecting a non-existing record.");
 
     // Now that we confirmed the new record doesn't exist, try to insert it
     $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array('genus' => "Felis"), array('species' => "silvestris"));
@@ -220,7 +250,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
       'genus' => "Felis",
       'species' => "silvestris"
     ));
-    $this->assertEquals($new_organism_id, $select_new_organism_id);
+    $this->assertEquals($new_organism_id, $select_new_organism_id, "Could not select a new record inserted using method getRecordPkey()");
 
   }
 }

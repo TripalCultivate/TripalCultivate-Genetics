@@ -151,7 +151,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $query = $connection->select('1:organism', 'o');
     $query->fields('o', ['organism_id']);
     $query->condition('o.organism_id', $organism_id, '=');
-    $result = $query->execute();
+    $result = $query->execute()->fetchField();
 
     // Ensure the organism ID exists
     if(!$result) {
@@ -174,7 +174,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $query = $connection->select('1:project', 'p');
     $query->fields('p', ['project_id']);
     $query->condition('p.project_id', $project_id, '=');
-    $result = $query->execute();
+    $result = $query->execute()->fetchField();
 
     // Ensure the project ID exists
     if(!$result) {
@@ -366,12 +366,20 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     */
   public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []) {
     
+    // Check if the mode is one of the 3 options, throw an exception otherwise 
+    $valid_modes = [0, 1, 2];
+
+    if (!in_array($mode, $valid_modes)) {
+      throw new \Exception(
+        t("The specified mode is not valid. (mode=@mode)." , ['@mode'=>$mode])
+      );
+      return FALSE;
+    }
+
     // Set some variables to abstract mode
     $select_only = 0;
     $insert_only = 1;
     $both = 2;
-
-    // @todo: Check if the mode is one of the 3 options, throw an exception otherwise 
 
     // the name of the primary key.
     $pkey = $table . '_id';
