@@ -161,20 +161,20 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     /****************************************************************************
      *  TESTS for method getRecordPkey()
      ****************************************************************************/
-    // Get the primary key of the organism we created using getRecordPkey()
-    $organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
+    // Get the primary key of the organism we previously created using getRecordPkey()
+    $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, [
       'genus' => $genus,
       'species' => $species
-    ));
-    $this->assertEquals($organism_id, $grabbed_organism_id, "The organism Id grabbed by getRecordPkey() does not match.");
+    ]);
+    $this->assertEquals($new_organism_id, $grabbed_organism_id, "The organism ID selected by getRecordPkey() does not match.");
 
     // Try to select a record using an invalid mode
     $exception_caught = FALSE;
     try {
-      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 5, array(
+      $plugin->getRecordPkey('Organism', 'organism', 5, [
         'genus' => $genus,
         'species' => $species
-      ));
+      ]);
     }
     catch ( \Exception $e ) { 
       $exception_caught = TRUE;
@@ -184,10 +184,10 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Try to insert a record that already exists and catch the expected exception
     $exception_caught = FALSE;
     try {
-      $plugin->getRecordPkey('Organism', 'organism', 1, array(
+      $plugin->getRecordPkey('Organism', 'organism', 1, [
         'genus' => $genus,
         'species' => $species
-      ));
+      ]);
     } 
     catch ( \Exception $e ) { 
       $exception_caught = TRUE;
@@ -195,7 +195,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $this->assertTrue($exception_caught, "Did not catch exception for trying to insert a duplicate.");
 
     // Enter a duplicate record to trigger an exception
-    $organism_id = $connection->insert('1:organism')
+    $dup_organism_id = $connection->insert('1:organism')
     ->fields(['genus', 'species'])
     ->values([
       'genus' => $genus,
@@ -205,10 +205,10 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
 
     $exception_caught = FALSE;
     try {
-      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 2, array(
+      $plugin->getRecordPkey('Organism', 'organism', 2, [
         'genus' => $genus,
         'species' => $species
-      ));
+      ]);
     }
     catch ( \Exception $e ) { 
       $exception_caught = TRUE;
@@ -218,11 +218,11 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Try to insert an organism with improper values to trigger an exception
     $exception_caught = FALSE;
     try {
-      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array(
+      $plugin->getRecordPkey('Organism', 'organism', 1, [
         'genus' => $genus,
         'species' => $species,
         'blah' => "blah"
-      ));
+      ]);
     }
     catch ( \Exception $e ) { 
       $exception_caught = TRUE;
@@ -232,10 +232,10 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Test if we can select a record that does not exist, and catch the exception 
     $exception_caught = FALSE;
     try {
-      $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
+      $plugin->getRecordPkey('Organism', 'organism', 0, [
         'genus' => "Felis",
         'species' => "silvestris"
-      ));
+      ]);
     }
     catch ( \Exception $e ) { 
       $exception_caught = TRUE;
@@ -243,14 +243,15 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $this->assertTrue($exception_caught, "Did not catch exception for selecting a non-existing record.");
 
     // Now that we confirmed the new record doesn't exist, try to insert it
-    $new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array('genus' => "Felis"), array('species' => "silvestris"));
+    $felis_organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, ['genus' => "Felis"], ['species' => "silvestris"]);
+    $this->assertIsNumeric($felis_organism_id, "Did not successfully insert a new organism (Felis silvestris) using getRecordPkey()");
 
     // Select it again to confirm that it now exists
-    $select_new_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, array(
+    $select_felis_organism_id = $plugin->getRecordPkey('Organism', 'organism', 0, [
       'genus' => "Felis",
       'species' => "silvestris"
-    ));
-    $this->assertEquals($new_organism_id, $select_new_organism_id, "Could not select a new record inserted using method getRecordPkey()");
+    ]);
+    $this->assertEquals($felis_organism_id, $select_felis_organism_id, "Could not select a new record inserted using method getRecordPkey()");
 
   }
 }
