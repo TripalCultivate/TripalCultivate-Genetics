@@ -15,6 +15,40 @@ interface GenotypesLoaderInterface {
    */
   public function label();
 
+  /**
+   * Given a record, selects it from the chado database (or inserts if not found
+   * and the mode allows) and returns the primary key.
+   * 
+   * @param string $record_type
+   *   A human-readable term for your record, used for error messages.
+   *   Eg. "Genotype", "Marker", "Genotype Marker Link"
+   * @param string $table
+   *   The name of the chado table to select from and/or insert into.
+   * @param int $mode
+   *   The user-specified means in which we are allowed to get the record's 
+   *   primary key. 
+   *   For example, the user may prefer to add stocks to the database
+   *   manually or expects all of them to exist, so chooses a mode of 0 (select 
+   *   only) so they will be informed if a germplasm does not already exist by
+   *   an error.
+   *   This must be one of: 0 (Select Only), 1 (Insert Only), 2 (Insert & Select)
+   * @param array $select_values
+   *   An array of [table column] => [value] mappings. 
+   *   These values will be used for both the select and the insert, but are 
+   *   specific to selecting the right record and thus are used in the 
+   *   conditions (i.e. WHERE clause) of the query.
+   * @param array $insert_values
+   *   An array of [table column] => [value] mappings that is specific to the 
+   *   insert. This is not required if mode is select only, and will be combined 
+   *   with select values for an insert. More specifically, the values for all 
+   *   columns set in the new record are defined in the combined select + insert
+   *   values arrays.
+   * @return int|false
+   *   The value of the primary key for the inserted/selected record.
+   *   If no primary key can be retrieved, then FALSE will be returned.
+   */
+  public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []);
+
   /****************************************************************************
    *  Setter functions
    ****************************************************************************/
@@ -135,43 +169,5 @@ interface GenotypesLoaderInterface {
    *   The filepath
    */ 
   public function getSampleFilepath();
-
-  /****************************************************************************
-   *  Other functions
-   ****************************************************************************/
-
-  /**
-   * Given a record, selects it from the chado database (or inserts if not found
-   * and the mode allows) and returns the primary key.
-   * 
-   * @param string $record_type
-   *   A human-readable term for your record, used for error messages.
-   *   Eg. "Genotype", "Marker", "Genotype Marker Link"
-   * @param string $table
-   *   The name of the chado table to select from and/or insert into.
-   * @param int $mode
-   *   The user-specified means in which we are allowed to get the record's 
-   *   primary key. 
-   *   For example, the user may prefer to add stocks to the database
-   *   manually or expects all of them to exist, so chooses a mode of 0 (select 
-   *   only) so they will be informed if a germplasm does not already exist by
-   *   an error.
-   *   This must be one of: 0 (Select Only), 1 (Insert Only), 2 (Insert & Select)
-   * @param array $select_values
-   *   An array of [table column] => [value] mappings. 
-   *   These values will be used for both the select and the insert, but are 
-   *   specific to selecting the right record and thus are used in the 
-   *   conditions (i.e. WHERE clause) of the query.
-   * @param array $insert_values
-   *   An array of [table column] => [value] mappings that is specific to the 
-   *   insert. This is not required if mode is select only, and will be combined 
-   *   with select values for an insert. More specifically, the values for all 
-   *   columns set in the new record are defined in the combined select + insert
-   *   values arrays.
-   * @return int|false
-   *   The value of the primary key for the inserted/selected record.
-   *   If no primary key can be retrieved, then FALSE will be returned.
-   */
-  public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []);
   
 }

@@ -136,6 +136,94 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     return (string) $this->pluginDefinition['label'];
   }
 
+  /**
+    * {@inheritdoc}
+    */
+  public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []) {
+    
+    // Check if the mode is one of the 3 options, throw an exception otherwise 
+    $valid_modes = [0, 1, 2];
+
+    if (!in_array($mode, $valid_modes)) {
+      throw new \Exception(
+        t("The specified mode is not valid (mode=@mode)." , ['@mode'=>$mode])
+      );
+      return FALSE;
+    }
+
+    // Set some variables to abstract mode
+    $select_only = 0;
+    $insert_only = 1;
+    $both = 2;
+
+    // the name of the primary key.
+    $pkey = $table . '_id';
+
+    // First we select the record to see if it already exists.
+    $query = $this->connection->select('1:' . $table, 't');
+    $query->fields('t', [$pkey]);
+    // Iterate through our select_values array
+    foreach($select_values as $key => $value) {
+      $query->condition('t.'.$key, $value, '=');
+    }
+    $record = $query->execute()->fetchAll();
+
+    // If it exists and the mode is 1 (Insert Only), then throw an exception.
+    if (sizeof($record) == 1) {
+      if ($mode == $insert_only) {
+        throw new \Exception(
+          t("Record '@record_type' already exists but you chose to only insert (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
+        );
+        return FALSE;
+      }
+      // Otherwise the mode allows select so return the value of the primary key.
+      else {
+        return $record[0]->{$pkey};
+      }
+    }
+
+    // If more then one result is returned then this is NOT UNIQUE and we should report an
+    // error to the user - not just run with the first one.
+    elseif (sizeof($record) > 1) {
+      throw new \Exception(
+        t("Record '@record_type' is not unique (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
+      );
+      return FALSE;
+    }
+
+    // If there is no pre-existing record but we've been given permission to create it,
+    // then insert it
+    elseif ($mode != $select_only) {
+
+      // If we want to insert values, we can merge our values to have all the information we need
+      $values = array_merge($select_values, $insert_values);
+
+      // Insert all of our values
+      $result = $this->connection->insert('1:' . $table)
+        ->fields($values)
+        ->execute();
+
+      // If the primary key is available then the insert worked and we can return it.
+      if ($result) {
+        return $result;
+      } 
+      else { // Otherwise, something went wrong so tell the user
+        throw new \Exception(
+          t("Tried to insert '@record_type' but the primary key is returned empty (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
+        );
+        return FALSE;
+      }
+    }
+    // If there is no pre-existing record and we are not allowed to create one,
+    // then return an error.
+    else {
+      throw new \Exception(
+        t("Record '@record_type' doesn't already exist but you chose to only select (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
+      );
+      return FALSE;
+    }
+  }
+
   /****************************************************************************
    *  Setter functions
    ****************************************************************************/
@@ -146,12 +234,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setOrganismID( int $organism_id ) {
     
     // Do validation - throw exception if not valid
-    // Open a db connection and query the provided organism ID
-    $connection = \Drupal::service('tripal_chado.database');
-    $query = $connection->select('1:organism', 'o');
-    $query->fields('o', ['organism_id']);
-    $query->condition('o.organism_id', $organism_id, '=');
-    $result = $query->execute()->fetchField();
+    // Query the provided organism ID
+    $result = $this->getRecordPkey("Organism", "organism", 0, ['organism_id' => $organism_id]);
 
     // Ensure the organism ID exists
     if(!$result) {
@@ -169,12 +253,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setProjectID( int $project_id ) {
     
     // Do validation - throw exception if not valid
-    // Open a db connection and query the provided project ID
-    $connection = \Drupal::service('tripal_chado.database');
-    $query = $connection->select('1:project', 'p');
-    $query->fields('p', ['project_id']);
-    $query->condition('p.project_id', $project_id, '=');
-    $result = $query->execute()->fetchField();
+    // Query the provided project ID
+    $result = $this->getRecordPkey("Project", "project", 0, ['project_id' => $project_id]);
 
     // Ensure the project ID exists
     if(!$result) {
@@ -192,12 +272,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setVariantSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
-    // Open a db connection and query the provided cvterm ID
-    $connection = \Drupal::service('tripal_chado.database');
-    $query = $connection->select('1:cvterm', 'cvt');
-    $query->fields('cvt', ['cvterm_id']);
-    $query->condition('cvt.cvterm_id', $cvterm_id, '=');
-    $result = $query->execute();
+    // Query the provided cvterm ID
+    $result = $this->getRecordPkey("Variant subtype cvterm", "cvterm", 0, ['cvterm_id' => $cvterm_id]);
 
     // Ensure the cvterm ID exists
     if(!$result) {
@@ -215,12 +291,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setMarkerSubTypeID( int $cvterm_id ) {
     
     // Do validation - throw exception if not valid
-    // Open a db connection and query the provided cvterm ID
-    $connection = \Drupal::service('tripal_chado.database');
-    $query = $connection->select('1:cvterm', 'cvt');
-    $query->fields('cvt', ['cvterm_id']);
-    $query->condition('cvt.cvterm_id', $cvterm_id, '=');
-    $result = $query->execute();
+    // Query the provided cvterm ID
+    $result = $this->getRecordPkey("Marker subtype cvterm", "cvterm", 0, ['cvterm_id' => $cvterm_id]);
 
     // Ensure the cvterm ID exists
     if(!$result) {
@@ -355,100 +427,5 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    */ 
   public function getSampleFilepath() {
     return $this->sample_file;
-  }
-
-  /****************************************************************************
-   *  Other functions
-   ****************************************************************************/
-
-   /**
-    * {@inheritdoc}
-    */
-  public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []) {
-    
-    // Check if the mode is one of the 3 options, throw an exception otherwise 
-    $valid_modes = [0, 1, 2];
-
-    if (!in_array($mode, $valid_modes)) {
-      throw new \Exception(
-        t("The specified mode is not valid (mode=@mode)." , ['@mode'=>$mode])
-      );
-      return FALSE;
-    }
-
-    // Set some variables to abstract mode
-    $select_only = 0;
-    $insert_only = 1;
-    $both = 2;
-
-    // the name of the primary key.
-    $pkey = $table . '_id';
-
-    // Open a db connection
-    $connection = \Drupal::service('tripal_chado.database');
-
-    // First we select the record to see if it already exists.
-    $query = $connection->select('1:' . $table, 't');
-    $query->fields('t', [$pkey]);
-    // Iterate through our select_values array
-    foreach($select_values as $key => $value) {
-      $query->condition('t.'.$key, $value, '=');
-    }
-    $record = $query->execute()->fetchAll();
-
-    // If it exists and the mode is 1 (Insert Only), then throw an exception.
-    if (sizeof($record) == 1) {
-      if ($mode == $insert_only) {
-        throw new \Exception(
-          t("Record '@record_type' already exists but you chose to only insert (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
-        );
-        return FALSE;
-      }
-      // Otherwise the mode allows select so return the value of the primary key.
-      else {
-        return $record[0]->{$pkey};
-      }
-    }
-
-    // If more then one result is returned then this is NOT UNIQUE and we should report an
-    // error to the user - not just run with the first one.
-    elseif (sizeof($record) > 1) {
-      throw new \Exception(
-        t("Record '@record_type' is not unique (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
-      );
-      return FALSE;
-    }
-
-    // If there is no pre-existing record but we've been given permission to create it,
-    // then insert it
-    elseif ($mode != $select_only) {
-
-      // If we want to insert values, we can merge our values to have all the information we need
-      $values = array_merge($select_values, $insert_values);
-
-      // Insert all of our values
-      $result = $connection->insert('1:' . $table)
-        ->fields($values)
-        ->execute();
-
-      // If the primary key is available then the insert worked and we can return it.
-      if ($result) {
-        return $result;
-      } 
-      else { // Otherwise, something went wrong so tell the user
-        throw new \Exception(
-          t("Tried to insert '@record_type' but the primary key is returned empty (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
-        );
-        return FALSE;
-      }
-    }
-    // If there is no pre-existing record and we are not allowed to create one,
-    // then return an error.
-    else {
-      throw new \Exception(
-        t("Record '@record_type' doesn't already exist but you chose to only select (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
-      );
-      return FALSE;
-    }
   }
 }
