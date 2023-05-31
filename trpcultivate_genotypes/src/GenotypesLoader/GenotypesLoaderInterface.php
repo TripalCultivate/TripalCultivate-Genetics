@@ -160,11 +160,14 @@ interface GenotypesLoaderInterface {
    * @param array $select_values
    *   An array of [table column] => [value] mappings. 
    *   These values will be used for both the select and the insert, but are 
-   *   specific to selecting the right record.
+   *   specific to selecting the right record and thus are used in the 
+   *   conditions (i.e. WHERE clause) of the query.
    * @param array $insert_values
    *   An array of [table column] => [value] mappings that is specific to the 
    *   insert. This is not required if mode is select only, and will be combined 
-   *   with select values for an insert.
+   *   with select values for an insert. More specifically, the values for all 
+   *   columns set in the new record are defined in the combined select + insert
+   *   values arrays.
    * @return int|false
    *   The value of the primary key for the inserted/selected record.
    *   If no primary key can be retrieved, then FALSE will be returned.

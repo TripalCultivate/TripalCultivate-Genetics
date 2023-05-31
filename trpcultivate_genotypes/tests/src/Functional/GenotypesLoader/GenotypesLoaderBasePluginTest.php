@@ -179,12 +179,12 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     catch ( \Exception $e ) { 
       $exception_caught = TRUE;
     }
-    $this->assertTrue($exception_caught, "Did not catch exception for using an inavlid mode (5).");
+    $this->assertTrue($exception_caught, "Did not catch exception for using an invalid mode (5).");
 
     // Try to insert a record that already exists and catch the expected exception
     $exception_caught = FALSE;
     try {
-      $organism_id = $plugin->getRecordPkey('Organism', 'organism', 1, array(
+      $plugin->getRecordPkey('Organism', 'organism', 1, array(
         'genus' => $genus,
         'species' => $species
       ));

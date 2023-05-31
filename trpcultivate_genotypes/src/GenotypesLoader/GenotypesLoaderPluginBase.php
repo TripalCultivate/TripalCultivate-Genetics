@@ -371,7 +371,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
     if (!in_array($mode, $valid_modes)) {
       throw new \Exception(
-        t("The specified mode is not valid. (mode=@mode)." , ['@mode'=>$mode])
+        t("The specified mode is not valid (mode=@mode)." , ['@mode'=>$mode])
       );
       return FALSE;
     }
@@ -396,7 +396,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
     $record = $query->execute()->fetchAll();
 
-    // If it exists and the mode is 1 (Insert Only), then return an error to drush.
+    // If it exists and the mode is 1 (Insert Only), then throw an exception.
     if (sizeof($record) == 1) {
       if ($mode == $insert_only) {
         throw new \Exception(
@@ -414,12 +414,12 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     // error to the user - not just run with the first one.
     elseif (sizeof($record) > 1) {
       throw new \Exception(
-        t("Record '@record_type' is not unique. (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
+        t("Record '@record_type' is not unique (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
       );
       return FALSE;
     }
 
-    // If there is no pre-existing sample but we've been given permission to create it,
+    // If there is no pre-existing record but we've been given permission to create it,
     // then insert it
     elseif ($mode != $select_only) {
 
