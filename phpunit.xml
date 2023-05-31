@@ -24,6 +24,12 @@
      <directory suffix=".php">trpcultivate_vcf/src</directory>
       <file>trpcultivate_vcf/trpcultivate_vcf.module</file>
     </include>
+    <exclude>
+      <!-- Exclude Interface classes from coverage -->
+      <file>trpcultivate_genotypes/src/GenotypesLoader/GenotypesLoaderInterface.php</file>
+      <!-- Exclude Annotation classes from coverage -->
+      <directory suffix=".php">trpcultivate_genotypes/src/Annotation</directory>
+    </exclude>
   </coverage>
   <php>
     <!-- Set error reporting to E_ALL. -->
