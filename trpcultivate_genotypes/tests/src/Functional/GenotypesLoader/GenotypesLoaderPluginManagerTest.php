@@ -46,8 +46,7 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
     // Start adding to the database what we need in order to build our options array
     // Create an organism
     $organism_id = $connection->insert('1:organism')
-      ->fields(['genus', 'species'])
-      ->values([
+      ->fields([
         'genus' => 'Tripalus',
         'species' => 'databasica',
       ])
@@ -55,8 +54,7 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
 
     // Create a project
     $project_id = $connection->insert('1:project')
-      ->fields(['name'])
-      ->values([
+      ->fields([
         'name' => 'Test Project',
       ])
       ->execute();
@@ -98,13 +96,29 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
     $invalid_input_file_type = 'goose';
     $options["input_file_type"] = $invalid_input_file_type;
 
-    $exception_caught = false;
+    $exception_caught = FALSE;
     try {
       $new_plugin = $plugin_manager->setParameters($options);
     }
     catch ( \Exception $e ) {
-      $exception_caught = true;
+      $exception_caught = TRUE;
     }
-    $this->assertTrue($exception_caught);
+    $this->assertTrue($exception_caught, "Did not catch exception for an invalid input file type.");
+
+    // Reset to a valid input file type
+    $options["input_file_type"] = $input_file_type;
+
+    // Test with an invalid organism ID and use a try-catch to ensure an exception is thrown
+    $invalid_organism = -1;
+    $options["organism_id"] = $invalid_organism;
+    $exception_caught = FALSE;
+    try {
+      $new_plugin = $plugin_manager->setParameters($options);
+    }
+    catch ( \Exception $e ) {
+      $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for using an invalid organism ID.");
+
   }
 }

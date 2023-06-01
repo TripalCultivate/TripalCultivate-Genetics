@@ -91,7 +91,7 @@ class GenotypesLoaderPluginManager extends DefaultPluginManager {
     }
     catch ( \Exception $e ) { 
       throw new \Exception(
-        t("Could not set a parameter while instanciating GenotypesLoader: '@pluginId'" , ['@pluginId'=>$pluginId]) . $e->geMessage()
+        t("Could not set a parameter while instanciating GenotypesLoader: '@pluginId'" , ['@pluginId'=>$pluginId]) . $e->getMessage()
       );
     }
 
