@@ -71,8 +71,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     $genus = "Tripalus";
     $species = "databasica";
     $organism_id = $connection->insert('1:organism')
-      ->fields(['genus', 'species'])
-      ->values([
+      ->fields([
         'genus' => $genus,
         'species' => $species,
       ])
@@ -89,8 +88,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Create a project
     $project_name = "Test Project";
     $project_id = $connection->insert('1:project')
-      ->fields(['name'])
-      ->values([
+      ->fields([
         'name' => $project_name,
       ])
       ->execute();
@@ -196,12 +194,11 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
 
     // Enter a duplicate record to trigger an exception
     $dup_organism_id = $connection->insert('1:organism')
-    ->fields(['genus', 'species'])
-    ->values([
-      'genus' => $genus,
-      'species' => $species,
-    ])
-    ->execute();
+      ->fields([
+        'genus' => $genus,
+        'species' => $species,
+      ])
+      ->execute();
 
     $exception_caught = FALSE;
     try {

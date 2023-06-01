@@ -46,8 +46,7 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
     // Start adding to the database what we need in order to build our options array
     // Create an organism
     $organism_id = $connection->insert('1:organism')
-      ->fields(['genus', 'species'])
-      ->values([
+      ->fields([
         'genus' => 'Tripalus',
         'species' => 'databasica',
       ])
@@ -55,8 +54,7 @@ class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
 
     // Create a project
     $project_id = $connection->insert('1:project')
-      ->fields(['name'])
-      ->values([
+      ->fields([
         'name' => 'Test Project',
       ])
       ->execute();
