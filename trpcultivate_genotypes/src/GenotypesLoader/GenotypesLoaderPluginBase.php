@@ -70,6 +70,14 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   protected $sample_file;
 
   /**
+   * An array of the samples provided in the samples file, associated with their stock IDs
+   * [sample_source_name] => [stock_id]
+   * 
+   * @var array
+   */
+  protected $samples;
+
+  /**
    * The logger for reporting progress, warnings and errors to admin.
    *
    * @var Drupal\tripal\Services\TripalLogger
@@ -221,6 +229,93 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("Record '@record_type' doesn't already exist but you chose to only select (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
       );
       return FALSE;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processSamples() {
+    
+    $sample_file = this->getSampleFilepath();
+    // Open the sample mapping file
+    $SAMPLES_FILE = fopen($sample_file, 'r');
+    if(!$SAMPLES_FILE) {
+      throw new \Exception(
+        t("Unable to open the samples file: %file", ['@file'=>$sample_file])
+      );
+    }
+
+    // Grab the header and count the number of columns
+    $header = fgetcsv($SAMPLE_MAP, 0, "\t");
+    $num_columns = count($header);
+    if (!(($num_columns >= 5) && ($num_columns <= 7))) {
+      throw new \Exception(
+        t("Unexpected number of columns (%columns) in the samples file: %file", ['@file'=>$sample_file, '@columns'=>$num_columns])
+      );
+    }
+
+    // Iterate through each row to grab all of the samples 
+    while(!feof($SAMPLE_MAP)) {
+      $current_line = fgetcsv($SAMPLE_MAP, 0, "\t");
+      if (empty($current_line)) continue;
+
+      // Column 1: DNA source (name should match sample in the input file)
+      $source_name = array_shift($current_line);
+      // Column 2: Name of the sample assayed
+      $sample_name = array_shift($current_line);
+      // Column 3: Accession of the sample assayed
+      $sample_accession = array_shift($current_line);
+      // Column 4: Name of the germplasm
+      $germplasm_name = array_shift($current_line);
+      // Column 5: Accession of the germplasm
+      $germplasm_accession = array_shift($current_line);
+      // Column 6: User can optionally supply a stock_type for each germplasm if they are inserting
+      if ($num_columns >= 6) {
+        $germplasm_type = array_shift($current_line);
+      }
+      // Column 7: User can optionally supply an organism for each germplasm if 
+      // they are inserting germplasm into the database. We need to allow spaces 
+      // in the genus and species, so use a custom query to check that what the user
+      // input matches what is in the database.
+      if ($num_columns == 7) {
+        $organism_name = array_shift($current_line);
+        // Grab the organism ID using the organism name and genus supplied in the samples file 
+        $organism_id = chado_get_organism_id_from_scientific_name($organism_name);
+        if (!$organism_id) {
+          throw new \Exception(
+            t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism])
+          );
+        }
+        // We also want to check if we were given only one value back, as there is 
+        // potential to retrieve multiple IDs using that function
+        if (is_array($organism_id)) {
+          throw new \Exception(
+            t("ERROR: Retrieved more than one organism ID for \"@organism_name\" when only 1 was expected.", ['@organism_name' => $organism_name])
+          );
+        }
+      }
+
+      /** --------------------------
+      *    LOOKUP/INSERT SAMPLES
+      * ----------------------------
+      * Samples in the samples file get checked for or inserted regardless if they
+      * appear in the input file containing genotypic calls. This could be useful if
+      * whoever is managing the database wants to use a single master file containing
+      * all the samples in their database. It also means some samples may be inserted
+      * but no additional data is inserted for those samples by this loader. 
+      */
+
+      // ---------- STOCK ----------
+      // Set the default mode for inserting samples to both insert and select
+      /* $samples_mode = '2';
+      $stock_id = getRecordPkey('Sample', 'stock', $samples_mode, [
+        'uniquename' => $sample_accession,
+        'organism_id' => $organism_id,
+        //'type_id' => "genomic_DNA",
+      ], [
+        'name' => $sample_name
+      ]); */
     }
   }
 
