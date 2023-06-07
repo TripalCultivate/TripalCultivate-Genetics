@@ -237,7 +237,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    */
   public function processSamples() {
     
-    $sample_file = this->getSampleFilepath();
+    $sample_file = $this->getSampleFilepath();
     // Open the sample mapping file
     $SAMPLES_FILE = fopen($sample_file, 'r');
     if(!$SAMPLES_FILE) {
@@ -247,7 +247,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
 
     // Grab the header and count the number of columns
-    $header = fgetcsv($SAMPLE_MAP, 0, "\t");
+    $header = fgetcsv($SAMPLES_FILE, 0, "\t");
     $num_columns = count($header);
     if (!(($num_columns >= 5) && ($num_columns <= 7))) {
       throw new \Exception(
@@ -256,8 +256,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
 
     // Iterate through each row to grab all of the samples 
-    while(!feof($SAMPLE_MAP)) {
-      $current_line = fgetcsv($SAMPLE_MAP, 0, "\t");
+    while(!feof($SAMPLES_FILE)) {
+      $current_line = fgetcsv($SAMPLES_FILE, 0, "\t");
       if (empty($current_line)) continue;
 
       // Column 1: DNA source (name should match sample in the input file)
@@ -281,7 +281,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       if ($num_columns == 7) {
         $organism_name = array_shift($current_line);
         // Grab the organism ID using the organism name and genus supplied in the samples file 
-        $organism_id = chado_get_organism_id_from_scientific_name($organism_name);
+        $organism_id = '2';//chado_get_organism_id_from_scientific_name($organism_name);
         if (!$organism_id) {
           throw new \Exception(
             t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism])
@@ -307,15 +307,34 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       */
 
       // ---------- STOCK ----------
-      // Set the default mode for inserting samples to both insert and select
-      /* $samples_mode = '2';
-      $stock_id = getRecordPkey('Sample', 'stock', $samples_mode, [
+      // Set the default mode to select only
+      $samples_mode = '0';
+      $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
         'uniquename' => $sample_accession,
         'organism_id' => $organism_id,
-        //'type_id' => "genomic_DNA",
-      ], [
-        'name' => $sample_name
-      ]); */
+      //  'type_id' => "genomic_DNA",
+      //], [
+      //  'name' => $sample_name
+      ]);
+      if (!$stock_id) {
+        throw new \Exception(
+          t("ERROR: Could not find a stock ID for @sample", ['@sample' => $sample_accession])
+        );
+      }
+
+      // -------- GERMPLASM --------
+      $germplasm_mode = '0';
+      $germplasm_id = $this->getRecordPkey('Germplasm', 'stock', $germplasm_mode, [
+        'uniquename' => $germplasm_accession,
+        'organism_id' => $organism_id,
+      // 'type_id' =>
+      ]);
+      if (!$germplasm_id) {
+        throw new \Exception(
+          t("ERROR: Could not find a stock ID for @germplasm", ['@germplasm' => $germplasm_accession])
+        );
+      }
+
     }
   }
 

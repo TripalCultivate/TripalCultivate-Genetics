@@ -250,5 +250,24 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     ]);
     $this->assertEquals($felis_organism_id, $select_felis_organism_id, "Could not select a new record inserted using method getRecordPkey()");
 
+    /****************************************************************************
+    *  TESTS for method processSamples()
+    ****************************************************************************/
+    // Setup our array with our samples and compare it to the output from our method
+    $samples_array = [
+      'Ross' => 'Catsam1',
+      'Prado' => 'Catsam2',
+      'Ash' => 'Catsam3',
+      'Piero' => 'Catsam4',
+      'Tai' => 'Catsam5',
+      'Beverly' => 'Catsam6',
+      'Argent' => 'Catsam7',
+      'Trenus' => 'Catsam8',
+      'Zapelli' => 'Catsam9'
+    ];
+
+    //$processed_samples = $plugin->processSamples();
+
+
   }
 }
