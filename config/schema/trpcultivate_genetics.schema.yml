@@ -1,0 +1,21 @@
+trpcultivate:
+  type: config_object
+  label: 'Tripal Cultivate Configuration'
+  mapping:
+    genetics:
+      type: mapping
+      label: 'Genetics Package Configuration'
+      mapping:
+        terms:
+          type: mapping
+          label: 'Package default terms'
+          mapping:
+            sample_germplasm_relationship_type:
+              type: integer
+              label: 'The cvterm ID of the relationship between a DNA sample stock and the germplasm it was extracted from'
+            sample_type:
+              type: integer
+              label: 'The cvterm ID of the stock type of the DNA sample that was genotyped'
+            germplasm_type:
+              type: integer
+              label: 'The cvterm ID of the default stock type of germplasm for which DNA samples were extracted'
