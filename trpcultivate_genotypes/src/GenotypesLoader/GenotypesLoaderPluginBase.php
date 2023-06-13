@@ -5,6 +5,7 @@ namespace Drupal\trpcultivate_genotypes\GenotypesLoader;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\tripal\Services\TripalLogger;
 use Drupal\tripal_chado\Database\ChadoConnection;
+use \Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -92,6 +93,13 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   protected $connection;
 
   /**
+   * The service for retreiving configuration values.
+   * 
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $config_factory;
+
+  /**
    * Implements ContainerFactoryPluginInterface->create().
    *
    * Since we have implemented the ContainerFactoryPluginInterface this static function
@@ -111,7 +119,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       $plugin_id,
       $plugin_definition,
       $container->get('tripal.logger'),
-      $container->get('tripal_chado.database')
+      $container->get('tripal_chado.database'),
+      $container->get('config.factory')
     );
   }
 
@@ -129,11 +138,12 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * @param Drupal\tripal\Services\TripalLogger $logger
    * @param Drupal\tripal_chado\Database\ChadoConnection $connection
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, TripalLogger $logger, ChadoConnection $connection) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, TripalLogger $logger, ChadoConnection $connection, ConfigFactoryInterface $config_factory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->logger = $logger;
     $this->connection = $connection;
+    $this->config_factory = $config_factory;
   }
 
   /**
@@ -237,6 +247,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    */
   public function processSamples() {
     
+    // Grab config from our settings.yml
+    $genetics_config = $this->config_factory->get('trpcultivate_genetics.settings');
     $sample_file = $this->getSampleFilepath();
     // Open the sample mapping file
     $SAMPLES_FILE = fopen($sample_file, 'r');
@@ -308,13 +320,14 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
       // ---------- STOCK ----------
       // Set the default mode to select only
-      $samples_mode = '0';
+      $samples_mode = '1';
+      $sample_type_id = $genetics_config->get('terms.sample_type');
       $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
         'uniquename' => $sample_accession,
         'organism_id' => $organism_id,
-      //  'type_id' => "genomic_DNA",
-      //], [
-      //  'name' => $sample_name
+        'type_id' => $sample_type_id
+      ], [
+        'name' => $sample_name
       ]);
       if (!$stock_id) {
         throw new \Exception(
@@ -323,11 +336,14 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       }
 
       // -------- GERMPLASM --------
-      $germplasm_mode = '0';
+      $germplasm_mode = '1';
+      $germplasm_type_id = $genetics_config->get('terms.germplasm_type');
       $germplasm_id = $this->getRecordPkey('Germplasm', 'stock', $germplasm_mode, [
         'uniquename' => $germplasm_accession,
         'organism_id' => $organism_id,
-      // 'type_id' =>
+        'type_id' => $germplasm_type_id
+      ], [
+        'name' => $germplasm_name
       ]);
       if (!$germplasm_id) {
         throw new \Exception(
@@ -335,6 +351,25 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         );
       }
 
+      // ----- GERMPLASM TO SAMPLE LINK -----
+
+      $sample_germplasm_relationship_type_id = $genetics_config->get('terms.sample_germplasm_relationship_type');
+      $status = genotypes_loader_helper_add_record_with_mode('Germplasm to Sample Link', 'stock_relationship', '2', [
+        'subject_id' => $stock_id,
+        'type_id' => $sample_germplasm_relationship_type_id,
+        'object_id' => $germplasm_id,
+      ]);
+      if (!$status) {
+        throw new \Exception(
+          t("ERROR: Could not link germplasm @germplasm to stock @sample", [
+            '@germplasm' => $germplasm_name,
+            '@sample' => $sample_name
+          ])
+        );
+      }
+      // Save the sample name (according to Chado) and its stock id in the samples array
+      $samples_array[$source_name]['sample_name'] = $sample_name;
+      $samples_array[$source_name]['sample_stock_id'] = $stock_id;
     }
   }
 
