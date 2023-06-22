@@ -293,19 +293,21 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       if ($num_columns == 7) {
         $organism_name = array_shift($current_line);
         // Grab the organism ID using the organism name and genus supplied in the samples file 
-        $organism_id = '2';//chado_get_organism_id_from_scientific_name($organism_name);
-        if (!$organism_id) {
+        $organism_array = chado_get_organism_id_from_scientific_name($organism_name);
+        //print_r($organism_array);
+        if (!$organism_array) {
           throw new \Exception(
-            t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism])
+            t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism_name])
           );
         }
         // We also want to check if we were given only one value back, as there is 
         // potential to retrieve multiple IDs using that function
-        if (is_array($organism_id)) {
+        if (is_array($organism_array) && (count($organism_array) > 1)) {
           throw new \Exception(
             t("ERROR: Retrieved more than one organism ID for \"@organism_name\" when only 1 was expected.", ['@organism_name' => $organism_name])
           );
         }
+        $organism_id = $organism_array[0];
       }
 
       /** --------------------------
@@ -321,7 +323,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // ---------- STOCK ----------
       // Set the default mode to select only
       $samples_mode = '1';
-      $sample_type_id = $genetics_config->get('terms.sample_type');
+      $sample_type_id = '9';//$genetics_config->get('terms.sample_type');
       $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
         'uniquename' => $sample_accession,
         'organism_id' => $organism_id,
@@ -337,7 +339,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
       // -------- GERMPLASM --------
       $germplasm_mode = '1';
-      $germplasm_type_id = $genetics_config->get('terms.germplasm_type');
+      $germplasm_type_id = '10';//$genetics_config->get('terms.germplasm_type');
       $germplasm_id = $this->getRecordPkey('Germplasm', 'stock', $germplasm_mode, [
         'uniquename' => $germplasm_accession,
         'organism_id' => $organism_id,
@@ -353,8 +355,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
       // ----- GERMPLASM TO SAMPLE LINK -----
 
-      $sample_germplasm_relationship_type_id = $genetics_config->get('terms.sample_germplasm_relationship_type');
-      $status = genotypes_loader_helper_add_record_with_mode('Germplasm to Sample Link', 'stock_relationship', '2', [
+      $sample_germplasm_relationship_type_id = '11'; //$genetics_config->get('terms.sample_germplasm_relationship_type');
+      $status = $this->getRecordPkey('Germplasm to Sample Link', 'stock_relationship', '2', [
         'subject_id' => $stock_id,
         'type_id' => $sample_germplasm_relationship_type_id,
         'object_id' => $germplasm_id,
@@ -371,6 +373,9 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       $samples_array[$source_name]['sample_name'] = $sample_name;
       $samples_array[$source_name]['sample_stock_id'] = $stock_id;
     }
+
+    // Return our samples array
+    return $samples_array;
   }
 
   /****************************************************************************

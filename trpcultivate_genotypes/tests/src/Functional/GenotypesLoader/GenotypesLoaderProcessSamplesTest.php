@@ -97,7 +97,33 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestBrowserBase {
     $grabbed_sample_file_path = $plugin->getSampleFilepath();
     $this->assertEquals($sample_file_path, $grabbed_sample_file_path, "The sample filepath grabbed by the getter method does not match.");
 
+    // Insert our 2 organisms that are in the file
+    // Felis catus
+    $organism_id = $connection->insert('1:organism')
+      ->fields([
+        'genus' => 'Felis',
+        'species' => 'catus',
+      ])
+      ->execute();
+
+    // Felis silvestris
+    $organism_id = $connection->insert('1:organism')
+      ->fields([
+        'genus' => 'Felis',
+        'species' => 'silvestris',
+      ])
+      ->execute();
+
     // Test that our samples all get inserted into the database
-    //$processed_samples = $plugin->processSamples();
+    $processed_samples = $plugin->processSamples();
+
+    //print_r($processed_samples);
+
+    // Check that the number of stocks match what we expect
+    $this->assertEquals(count($samples_array), count($processed_samples), "The number of samples that were processed is incorrect.");
+
+    // Iterate through the process samples array and check that each one exists in the database
+    
+
   }
 }
