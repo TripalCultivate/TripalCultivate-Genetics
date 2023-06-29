@@ -248,7 +248,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function processSamples() {
     
     // Grab config from our settings.yml
-    //$genetics_config = $this->config_factory->get('trpcultivate_genetics.settings');
+    $genetics_config = $this->config_factory->get('trpcultivate_genetics.settings');
     //$genotypes_config = $this->config_factory->get('trpcultivate_genotypes.settings');
     $sample_file = $this->getSampleFilepath();
     // Open the sample mapping file
@@ -324,7 +324,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // ---------- STOCK ----------
       // Set the default mode to select only
       $samples_mode = '1';//$genotypes_config->get('modes.samples_mode');
-      $sample_type_id = '9';//$genetics_config->get('terms.sample_type');
+      $sample_type_id = $genetics_config->get('terms.sample_type'); // 9
       $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
         'uniquename' => $sample_accession,
         'organism_id' => $organism_id,
