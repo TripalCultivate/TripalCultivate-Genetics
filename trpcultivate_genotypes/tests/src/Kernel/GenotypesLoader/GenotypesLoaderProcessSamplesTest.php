@@ -15,7 +15,7 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
  * @group Genotypes Loader
  */
 class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
-  
+
   /**
    * Modules to enable.
    *
@@ -36,32 +36,21 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		// Open connection to Chado
 		$connection = $this->getTestSchema(ChadoTestKernelBase::PREPARE_TEST_CHADO);
 
-		// Mock genetics config
-		$config = $this->createMock('\Drupal\Core\Config\ImmutableConfig');
-		// Mock getting the sample type ID
-		$config->expects($this->any())
-			->method('get')
-			->with('terms.sample_type')
-			->willReturn(9);
-		// Mock getting the germplasm type ID
-		$config->expects($this->any())
-			->method('get')
-			->with('terms.germplasm_type')
-			->willReturn(10);
-		// Mock getting the sample germplasm relationship type ID
-		$config->expects($this->any())
-			->method('get')
-			->with('terms.sample_germplasm_relationship_type')
-			->willReturn(11);
+		$configs = [
+			'trpcultivate_genetics.settings' => [
+				'terms.sample_type' => 9,
+				'terms.germplasm_type' => 10,
+				'terms.sample_germplasm_relationship_type' => 11,
+			],
+			'trpcultivate_genotypes.settings' => [
+				'modes.samples_mode' => 0,
+				'modes.germplasm_mode' => 0,
+				'modes.variants_mode' => 0,
+				'modes.markers_mode' => 0,
+			],
+		];
+		$config_factory = $this->getConfigFactoryStub($configs);
 
-		// Config factory mock.
-		$config_factory = $this->createMock('Drupal\Core\Config\ConfigFactoryInterface');
-		// Mocking get method.
-		$config_factory->expects($this->any())
-			->method('get')
-			->with('trpcultivate_genetics.settings')
-			->willReturn($config);
- 
 		// Create the Genotypes Loader object
 		// Configuration should be any key value pairs specific to Genotypes Loader plugin
 		$configuration = [];
@@ -101,5 +90,90 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Test that our samples all get inserted into the database
 		$processed_samples = $plugin->processSamples();
+	}
+
+	/**
+	 * Our version of UnitTestCase::getConfigFactoryStub()
+	 * It is exactly the same at this point but was not available in kernel tests.
+	 * @see https://api.drupal.org/api/drupal/core%21tests%21Drupal%21Tests%21UnitTestCase.php/function/UnitTestCase%3A%3AgetConfigFactoryStub/9
+	 *
+	 * @param array $configs
+	 * 	An associative array of configuration settings whose keys are
+	 * 	configuration object names and whose values are key => value arrays for the
+	 * 	configuration object in question. Defaults to an empty array.
+	 *
+	 * @return \PHPUnit\Framework\MockObject\MockBuilder
+	 * 	A MockBuilder object for the ConfigFactory with the desired return values.
+	 */
+	public function getConfigFactoryStub(array $configs = []) {
+		$config_get_map = [];
+		$config_editable_map = [];
+
+		// Construct the desired configuration object stubs, each with its own
+		// desired return map.
+		foreach ($configs as $config_name => $config_values) {
+
+			// Define a closure over the $config_values, which will be used as a
+			// returnCallback below. This function will mimic
+			// \Drupal\Core\Config\Config::get and allow using dotted keys.
+			$config_get = function ($key = '') use ($config_values) {
+
+				// Allow to pass in no argument.
+				if (empty($key)) {
+					return $config_values;
+				}
+
+				// See if we have the key as is.
+				if (isset($config_values[$key])) {
+					return $config_values[$key];
+				}
+				$parts = explode('.', $key);
+				$value = NestedArray::getValue($config_values, $parts, $key_exists);
+				return $key_exists ? $value : NULL;
+			};
+			$immutable_config_object = $this
+				->getMockBuilder('Drupal\\Core\\Config\\ImmutableConfig')
+				->disableOriginalConstructor()
+				->getMock();
+			$immutable_config_object
+				->expects($this
+				->any())
+				->method('get')
+				->willReturnCallback($config_get);
+			$config_get_map[] = [
+				$config_name,
+				$immutable_config_object,
+			];
+			$mutable_config_object = $this
+				->getMockBuilder('Drupal\\Core\\Config\\Config')
+				->disableOriginalConstructor()
+				->getMock();
+			$mutable_config_object
+				->expects($this
+				->any())
+				->method('get')
+				->willReturnCallback($config_get);
+			$config_editable_map[] = [
+				$config_name,
+				$mutable_config_object,
+			];
+		}
+
+		// Construct a config factory with the array of configuration object stubs
+		// as its return map.
+		$config_factory = $this
+			->createMock('Drupal\\Core\\Config\\ConfigFactoryInterface');
+		$config_factory
+			->expects($this
+			->any())
+			->method('get')
+			->willReturnMap($config_get_map);
+		$config_factory
+			->expects($this
+			->any())
+			->method('getEditable')
+			->willReturnMap($config_editable_map);
+
+		return $config_factory;
 	}
 }
