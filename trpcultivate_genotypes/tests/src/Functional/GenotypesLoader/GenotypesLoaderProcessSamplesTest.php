@@ -114,10 +114,24 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestBrowserBase {
       ])
       ->execute();
 
+    // // Set our samples mode and germplasm mode to be select only.
+    // $samples_mode 
+    // // We'd expect an exception from getRecordPkey
+    // $exception_caught = FALSE;
+    // try {
+    //   $plugin->processSamples();
+    // } 
+    // catch ( \Exception $e ) {
+    //   $exception_caught = TRUE;
+    // }
+    // $this->assertTrue($exception_caught, "Did not catch exception for attempting to select a non-existing sample.");
+
     // Test that our samples all get inserted into the database
     $processed_samples = $plugin->processSamples();
 
     //print_r($processed_samples);
+
+    
 
     // Check that the number of stocks match what we expect
     $this->assertEquals(count($samples_array), count($processed_samples), "The number of samples that were processed is incorrect.");

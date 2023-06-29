@@ -248,8 +248,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function processSamples() {
     
     // Grab config from our settings.yml
-    $genetics_config = $this->config_factory->get('trpcultivate_genetics.settings');
-    $genotypes_config = $this->config_factory->get('trpcultivate_genotypes.settings');
+    //$genetics_config = $this->config_factory->get('trpcultivate_genetics.settings');
+    //$genotypes_config = $this->config_factory->get('trpcultivate_genotypes.settings');
     $sample_file = $this->getSampleFilepath();
     // Open the sample mapping file
     $SAMPLES_FILE = fopen($sample_file, 'r');
@@ -323,7 +323,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
       // ---------- STOCK ----------
       // Set the default mode to select only
-      $samples_mode = '1';//$genotypes_config->get('terms.samples_mode');
+      $samples_mode = '1';//$genotypes_config->get('modes.samples_mode');
       $sample_type_id = '9';//$genetics_config->get('terms.sample_type');
       $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
         'uniquename' => $sample_accession,
@@ -339,7 +339,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       }
 
       // -------- GERMPLASM --------
-      $germplasm_mode = '1';//$genotypes_config->get('terms.germplasm_mode');
+      $germplasm_mode = '1';//$genotypes_config->get('modes.germplasm_mode');
       $germplasm_type_id = '10';//$genetics_config->get('terms.germplasm_type');
       $germplasm_id = $this->getRecordPkey('Germplasm', 'stock', $germplasm_mode, [
         'uniquename' => $germplasm_accession,
