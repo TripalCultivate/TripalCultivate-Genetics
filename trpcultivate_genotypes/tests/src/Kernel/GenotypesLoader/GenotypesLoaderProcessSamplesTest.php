@@ -204,6 +204,10 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 				->any())
 				->method('get')
 				->willReturnCallback($config_get);
+			$immutable_config_object
+				->expects($this->any())
+				->method('__sleep')
+				->willReturn([]);
 			$config_get_map[] = [
 				$config_name,
 				$immutable_config_object,
