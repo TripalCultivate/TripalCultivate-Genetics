@@ -38,12 +38,15 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
     // Open connection to Chado
     $connection = $this->createTestSchema(ChadoTestBrowserBase::PREPARE_TEST_CHADO);
 
+    // Config factory mock.
+    $config_factory = $this->createMock('Drupal\Core\Config\ConfigFactoryInterface');
+
     // Create the Genotypes Loader object
     // Configuration should be any key value pairs specific to Genotypes Loader plugin
     $configuration = [];
     $plugin_definition = [];
     $logger = \Drupal::service('tripal.logger');
-    $plugin = new GenotypesLoaderFakePlugin($configuration,"fake_genotypes_loader",$plugin_definition,$logger,$connection);
+    $plugin = new GenotypesLoaderFakePlugin($configuration,"fake_genotypes_loader",$plugin_definition,$logger,$connection,$config_factory);
     $this->assertIsObject($plugin, 'Unable to create a Plugin');
     $this->assertInstanceOf(GenotypesLoaderInterface::class, $plugin,"Returned object is not an instance of GenotypesLoaderInterface.");
 

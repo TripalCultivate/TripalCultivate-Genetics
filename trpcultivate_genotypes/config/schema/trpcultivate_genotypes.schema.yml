@@ -1,0 +1,21 @@
+trpcultivate_genotypes.settings:
+  type: config_object
+  label: 'Genotypes Package Configuration'
+  mapping:
+    modes:
+      type: mapping
+      label: 'Record Insert/Select Modes'
+      description: 'The mode is one of: 0 (Select Only), 1 (Insert Only), 2 (Insert & Select)'
+      mapping:
+        samples_mode:
+          type: integer
+          label: 'The mode in which we are allowed to get the samples from the database.'
+        germplasm_mode:
+          type: integer
+          label: 'The mode in which we are allowed to get the germplasm from the database.'
+        variants_mode:
+          type: integer
+          label: 'The mode in which we are allowed to get the variants from the database.'
+        markers_mode:
+          type: integer
+          label: 'The mode in which we are allowed to get the markers from the database.'
