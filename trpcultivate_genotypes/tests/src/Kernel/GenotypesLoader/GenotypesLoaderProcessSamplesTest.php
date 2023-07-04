@@ -17,7 +17,8 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
 class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
   /**
-   * Modules to enable.
+   * Dependent modules to enable.
+	 * NOTE: No install code is run for these modules unless specified in setup
    *
    * @var array
    */
@@ -43,8 +44,8 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 				'terms.sample_germplasm_relationship_type' => 11,
 			],
 			'trpcultivate_genotypes.settings' => [
-				'modes.samples_mode' => 0,
-				'modes.germplasm_mode' => 0,
+				'modes.samples_mode' => 1,
+				'modes.germplasm_mode' => 1,
 				'modes.variants_mode' => 0,
 				'modes.markers_mode' => 0,
 			],
@@ -88,8 +89,71 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			])
 			->execute();
 
-		// Test that our samples all get inserted into the database
+		// Process our samples so that they all get inserted into the database
 		$processed_samples = $plugin->processSamples();
+
+		// Setup our array with our samples and compare it to the output from our method
+		$samples_array = [
+      'Ross' => [ 'sample_name' => 'Ross_110201', 'sample_stock_id' => 1 ],
+      'Prado' => [ 'sample_name' => 'Prado_110201', 'sample_stock_id' => 3 ],
+      'Ash' => [ 'sample_name' => 'Ash_110201', 'sample_stock_id' => 5 ],
+      'Piero' => [ 'sample_name' => 'Piero_110201', 'sample_stock_id' => 7 ],
+      'Tai' => [ 'sample_name' => 'Tai_110201', 'sample_stock_id' => 9 ],
+      'Beverly' => [ 'sample_name' => 'Beverly_110201', 'sample_stock_id' => 11 ],
+      'Argent' => [ 'sample_name' => 'Argent_110201', 'sample_stock_id' => 13 ],
+      'Trenus' => [ 'sample_name' => 'Trenus_110201', 'sample_stock_id' => 15 ],
+      'Zapelli' => [ 'sample_name' => 'Zapelli_110201', 'sample_stock_id' => 17 ]
+    ];
+
+		// Check that the number of stocks match what we expect
+    $this->assertEquals(count($samples_array), count($processed_samples), "The number of samples that were processed is incorrect.");
+
+		// Compare our returned samples array with what we expect to get
+		$this->assertEquals($samples_array, $processed_samples, "The returned samples array is not what was expected.");
+
+		// Check that our samples are the correct organisms
+
+		// Check that our samples' germplasm are the correct germplasm type
+
+		// Test for 5 columns in our sample file, and ensure the default germplasm
+		// type and organism are being assigned
+		// Sample Filepath
+		$five_columns_file_path = __DIR__ . '/../../Fixtures/cats_samples_5_columns.tsv';
+
+		// Set sample filepath
+		$success = $plugin->setSampleFilepath($five_columns_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with 5 columns");
+
+		$processed_samples = $plugin->processSamples();
+
+		// Pull out the germplasm type for a sample (Expect: Individual)
+
+		// Pull out the organism for the first sample (Expect: Felis catus)
+
+		/****************************************************************************
+     *  TESTS for Exceptions
+     ****************************************************************************/
+		// Try a samples file with an incorrect number of columns
+		// Sample Filepath
+		$too_few_columns_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
+
+		// Set sample filepath
+		$success = $plugin->setSampleFilepath($too_few_columns_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with too few columns");
+
+    $exception_caught = FALSE;
+    try {
+      $processed_samples = $plugin->processSamples();
+    }
+    catch ( \Exception $e ) {
+      $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for detecting a samples files with the wrong number of columns.");
+
+		// Try samples with an organism that doesn't exist in the database
+
+		// Try samples with more than one organism entry in the database
+
 	}
 
 	/**

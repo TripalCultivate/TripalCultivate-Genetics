@@ -253,11 +253,6 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $sample_file = $this->getSampleFilepath();
     // Open the sample mapping file
     $SAMPLES_FILE = fopen($sample_file, 'r');
-    if(!$SAMPLES_FILE) {
-      throw new \Exception(
-        t("Unable to open the samples file: %file", ['@file'=>$sample_file])
-      );
-    }
 
     // Grab the header and count the number of columns
     $header = fgetcsv($SAMPLES_FILE, 0, "\t");
@@ -267,6 +262,10 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         t("Unexpected number of columns (%columns) in the samples file: %file", ['@file'=>$sample_file, '@columns'=>$num_columns])
       );
     }
+
+    // Collect our default germplasm type and organism
+    $default_germplasm_type_id = $genetics_config->get('terms.germplasm_type');
+    $default_organism_id = $this->getOrganismID();
 
     // Iterate through each row to grab all of the samples
     while(!feof($SAMPLES_FILE)) {
@@ -286,6 +285,27 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // Column 6: User can optionally supply a stock_type for each germplasm if they are inserting
       if ($num_columns >= 6) {
         $germplasm_type = array_shift($current_line);
+        // Break our germplasm type into its dbname and accession
+        list($germplasm_type_dbname, $germplasm_type_accession) = explode(':', $germplasm_type);
+        // Reminder: check that germplasm_type is in the correct format
+        $query = $this->connection->select('1:cvterm', 'cvt')
+          ->fields('cvt', ['cvterm_id']);
+        // Joins cannot be chained
+        $query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
+        $query->join('1:db', 'db', 'dbx.db_id = db.db_id');
+        $query->condition('db.name', $germplasm_type_dbname)
+          ->condition('dbx.accession', $germplasm_type_accession);
+        $records = $query->execute()->fetchAll();
+        // Check there is only 1 record, otherwise throw an exception
+        $germplasm_type_id = $records[0]->cvterm_id;
+
+        // $germplasm_type_id = $this->getRecordPkey('Germplasm Type', 'cvterm', 0, [
+        //   'name' => $germplasm_type
+        // ]);
+        // Reminder: getRecordPkey() will throw an exception if !$germplasm_type_id
+      } else {
+        // If not provided with a cvterm, grab the default
+        $germplasm_type_id = $default_germplasm_type_id;
       }
       // Column 7: User can optionally supply an organism for each germplasm if
       // they are inserting germplasm into the database. We need to allow spaces
@@ -309,6 +329,9 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
           );
         }
         $organism_id = $organism_array[0];
+      } else {
+        // If not provided with an organism, use the default
+        $organism_id = $default_organism_id;
       }
 
       /** --------------------------
@@ -322,9 +345,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       */
 
       // ---------- STOCK ----------
-      // Set the default mode to select only
-      $samples_mode = $genotypes_config->get('modes.samples_mode'); // 0
-      $sample_type_id = $genetics_config->get('terms.sample_type'); // 9
+      $samples_mode = $genotypes_config->get('modes.samples_mode');
+      $sample_type_id = $genetics_config->get('terms.sample_type');
       $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
         'uniquename' => $sample_accession,
         'organism_id' => $organism_id,
@@ -332,15 +354,10 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       ], [
         'name' => $sample_name
       ]);
-      if (!$stock_id) {
-        throw new \Exception(
-          t("ERROR: Could not find a stock ID for @sample", ['@sample' => $sample_accession])
-        );
-      }
+      // Reminder: getRecordPkey() will throw an exception if !$stock_id
 
       // -------- GERMPLASM --------
-      $germplasm_mode = $genotypes_config->get('modes.germplasm_mode'); // 0
-      $germplasm_type_id = $genetics_config->get('terms.germplasm_type'); // 10
+      $germplasm_mode = $genotypes_config->get('modes.germplasm_mode');
       $germplasm_id = $this->getRecordPkey('Germplasm', 'stock', $germplasm_mode, [
         'uniquename' => $germplasm_accession,
         'organism_id' => $organism_id,
@@ -348,28 +365,17 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       ], [
         'name' => $germplasm_name
       ]);
-      if (!$germplasm_id) {
-        throw new \Exception(
-          t("ERROR: Could not find a stock ID for @germplasm", ['@germplasm' => $germplasm_accession])
-        );
-      }
+      // Reminder: getRecordPkey() will throw an exception if !$germplasm_id
 
       // ----- GERMPLASM TO SAMPLE LINK -----
-
-      $sample_germplasm_relationship_type_id = $genetics_config->get('terms.sample_germplasm_relationship_type'); // 11
+      $sample_germplasm_relationship_type_id = $genetics_config->get('terms.sample_germplasm_relationship_type');
       $status = $this->getRecordPkey('Germplasm to Sample Link', 'stock_relationship', '2', [
         'subject_id' => $stock_id,
         'type_id' => $sample_germplasm_relationship_type_id,
         'object_id' => $germplasm_id,
       ]);
-      if (!$status) {
-        throw new \Exception(
-          t("ERROR: Could not link germplasm @germplasm to stock @sample", [
-            '@germplasm' => $germplasm_name,
-            '@sample' => $sample_name
-          ])
-        );
-      }
+      // Reminder: getRecordPkey() will throw an exception if !$status
+
       // Save the sample name (according to Chado) and its stock id in the samples array
       $samples_array[$source_name]['sample_name'] = $sample_name;
       $samples_array[$source_name]['sample_stock_id'] = $stock_id;
@@ -488,8 +494,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setInputFilepath( string $input_file ) {
 
     // Do validation - throw exception if not valid
-    // Check if file exists
-    if(!file_exists($input_file)) {
+    // Check if file exists and is a file (NOT a directory)
+    if(!(is_file($input_file) && file_exists($input_file))) {
       throw new \Exception(
         t("The input file must already exist but a filepath of @file was provided." , ['@file'=>$input_file])
       );
@@ -513,8 +519,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   public function setSampleFilepath( string $sample_file ) {
 
     // Do validation - throw exception if not valid
-    // Check if file exists
-    if(!file_exists($sample_file)) {
+    // Check if file exists and is a file (NOT a directory)
+    if(!(is_file($sample_file) && file_exists($sample_file))) {
       throw new \Exception(
         t("The samples file must already exist but a filepath of @file was provided." , ['@file'=>$sample_file])
       );
