@@ -94,16 +94,16 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Setup our array with our samples and compare it to the output from our method
 		$samples_array = [
-      'Ross' => [ 'sample_name' => 'Ross_110201', 'sample_stock_id' => 1 ],
-      'Prado' => [ 'sample_name' => 'Prado_110201', 'sample_stock_id' => 3 ],
-      'Ash' => [ 'sample_name' => 'Ash_110201', 'sample_stock_id' => 5 ],
-      'Piero' => [ 'sample_name' => 'Piero_110201', 'sample_stock_id' => 7 ],
-      'Tai' => [ 'sample_name' => 'Tai_110201', 'sample_stock_id' => 9 ],
-      'Beverly' => [ 'sample_name' => 'Beverly_110201', 'sample_stock_id' => 11 ],
-      'Argent' => [ 'sample_name' => 'Argent_110201', 'sample_stock_id' => 13 ],
-      'Trenus' => [ 'sample_name' => 'Trenus_110201', 'sample_stock_id' => 15 ],
-      'Zapelli' => [ 'sample_name' => 'Zapelli_110201', 'sample_stock_id' => 17 ]
-    ];
+			'Ross' => 1,
+			'Prado' => 3,
+			'Ash' => 5,
+			'Piero' => 7,
+			'Tai' => 9,
+			'Beverly' => 11,
+			'Argent' => 13,
+			'Trenus' => 15,
+			'Zapelli' => 17
+		];
 
 		// Check that the number of stocks match what we expect
     $this->assertEquals(count($samples_array), count($processed_samples), "The number of samples that were processed is incorrect.");

@@ -71,7 +71,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   protected $sample_file;
 
   /**
-   * An array of the samples provided in the samples file, associated with their stock IDs
+   * An array of the sample names within the genotypes input file, associated with their stock IDs
    * [sample_source_name] => [stock_id]
    *
    * @var array
@@ -272,7 +272,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       $current_line = fgetcsv($SAMPLES_FILE, 0, "\t");
       if (empty($current_line)) continue;
 
-      // Column 1: DNA source (name should match sample in the input file)
+      // Column 1: DNA source (name should match sample in the genotype input file)
       $source_name = array_shift($current_line);
       // Column 2: Name of the sample assayed
       $sample_name = array_shift($current_line);
@@ -309,8 +309,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       }
       // Column 7: User can optionally supply an organism for each germplasm if
       // they are inserting germplasm into the database. We need to allow spaces
-      // in the genus and species, so use a custom query to check that what the user
-      // input matches what is in the database.
+      // between the genus and species as well as infraspecific organisms, so we'll
+      // use a method from Tripal's API to look it up in the database
       if ($num_columns == 7) {
         $organism_name = array_shift($current_line);
         // Grab the organism ID using the organism name and genus supplied in the samples file
@@ -376,13 +376,13 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       ]);
       // Reminder: getRecordPkey() will throw an exception if !$status
 
-      // Save the sample name (according to Chado) and its stock id in the samples array
-      $samples_array[$source_name]['sample_name'] = $sample_name;
-      $samples_array[$source_name]['sample_stock_id'] = $stock_id;
+      // Save the sample source name (which will match the sample name given in the
+      // genotypes input file) and its stock id in the samples array
+      $samples[$source_name] = $stock_id;
     }
 
     // Return our samples array
-    return $samples_array;
+    return $samples;
   }
 
   /****************************************************************************
