@@ -298,11 +298,6 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         $records = $query->execute()->fetchAll();
         // Check there is only 1 record, otherwise throw an exception
         $germplasm_type_id = $records[0]->cvterm_id;
-
-        // $germplasm_type_id = $this->getRecordPkey('Germplasm Type', 'cvterm', 0, [
-        //   'name' => $germplasm_type
-        // ]);
-        // Reminder: getRecordPkey() will throw an exception if !$germplasm_type_id
       } else {
         // If not provided with a cvterm, grab the default
         $germplasm_type_id = $default_germplasm_type_id;

@@ -22,7 +22,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
    *
    * @var array
    */
-  protected static $modules = ['trpcultivate_genotypes'];
+  protected static $modules = ['trpcultivate_genetics','trpcultivate_genotypes'];
 
   /**
    * Test a fake instance of Genotypes Loader Plugin in terms of processing a samples file.
@@ -37,20 +37,18 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		// Open connection to Chado
 		$connection = $this->getTestSchema(ChadoTestKernelBase::PREPARE_TEST_CHADO);
 
-		$configs = [
-			'trpcultivate_genetics.settings' => [
-				'terms.sample_type' => 9,
-				'terms.germplasm_type' => 10,
-				'terms.sample_germplasm_relationship_type' => 11,
-			],
-			'trpcultivate_genotypes.settings' => [
-				'modes.samples_mode' => 1,
-				'modes.germplasm_mode' => 1,
-				'modes.variants_mode' => 0,
-				'modes.markers_mode' => 0,
-			],
-		];
-		$config_factory = $this->getConfigFactoryStub($configs);
+		// Install module configuration and set values
+    $this->installConfig(['trpcultivate_genotypes','trpcultivate_genetics']);
+    $config_factory = \Drupal::configFactory();
+		$genetics_config = $config_factory->getEditable('trpcultivate_genetics.settings');
+		$genetics_config->set('terms.sample_type', 9);
+		$genetics_config->set('terms.germplasm_type', 10);
+		$genetics_config->set('terms.sample_germplasm_relationship_type', 11);
+		$genetics_config->save();
+    $genotypes_config = $config_factory->getEditable('trpcultivate_genotypes.settings');
+		$genotypes_config->set('modes.samples_mode', 1);
+		$genotypes_config->set('modes.germplasm_mode', 1);
+		$genotypes_config->save();
 
 		// Create the Genotypes Loader object
 		// Configuration should be any key value pairs specific to Genotypes Loader plugin
@@ -74,7 +72,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Insert our 2 organisms that are in the file
 		// Felis catus
-		$organism_id = $connection->insert('1:organism')
+		$catus_organism_id = $connection->insert('1:organism')
 			->fields([
 				'genus' => 'Felis',
 				'species' => 'catus',
@@ -82,7 +80,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			->execute();
 
 		// Felis silvestris
-		$organism_id = $connection->insert('1:organism')
+		$silvestris_organism_id = $connection->insert('1:organism')
 			->fields([
 				'genus' => 'Felis',
 				'species' => 'silvestris',
@@ -112,19 +110,47 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$this->assertEquals($samples_array, $processed_samples, "The returned samples array is not what was expected.");
 
 		// Check that our samples are the correct organisms
+		// First check Ross is a Felis catus
+		$Ross_query = $connection->select('1:stock','s')
+    	->fields('s', ['organism_id'])
+			->condition('stock_id', 1, '=');
+		$Ross_record = $Ross_query->execute()->fetchAll();
+		$this->assertEquals($catus_organism_id, $Ross_record[0]->organism_id, "One of the samples that was inserted (Ross) is of the wrong organism.");
+
+		// Second, check Zapelli is a Felis silvestris
+		$Zapelli_query = $connection->select('1:stock','s')
+    	->fields('s', ['organism_id'])
+			->condition('stock_id', 17, '=');
+		$Zapelli_record = $Zapelli_query->execute()->fetchAll();
+		$this->assertEquals($silvestris_organism_id, $Zapelli_record[0]->organism_id, "One of the samples that was inserted (Zapelli) is of the wrong organism.");
 
 		// Check that our samples' germplasm are the correct germplasm type
+		// Pull out the cvterm ID for CO_010:0000044
+		$germplasm_type_query = $connection->select('1:cvterm', 'cvt')
+      ->fields('cvt', ['cvterm_id']);
+		$germplasm_type_query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
+		$germplasm_type_query->join('1:db', 'db', 'dbx.db_id = db.db_id');
+		$germplasm_type_query->condition('db.name', 'CO_010')
+			->condition('dbx.accession', '0000044');
+		$germplasm_type_records = $germplasm_type_query->execute()->fetchAll();
+		$germplasm_type_id = $germplasm_type_records[0]->cvterm_id;
+		// Check the cvterm_id for the germplasm Ross
+		$Ross_germ_query = $connection->select('1:stock','s')
+    	->fields('s', ['type_id'])
+			->condition('stock_id', 2, '=');
+		$Ross_germ_record = $Ross_germ_query->execute()->fetchAll();
+		$this->assertEquals($germplasm_type_id, $Ross_germ_record[0]->type_id, "The germplasm being inserted has an unexpected type_id.");
 
 		// Test for 5 columns in our sample file, and ensure the default germplasm
 		// type and organism are being assigned
 		// Sample Filepath
-		$five_columns_file_path = __DIR__ . '/../../Fixtures/cats_samples_5_columns.tsv';
+		$five_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_5_columns.tsv';
 
 		// Set sample filepath
-		$success = $plugin->setSampleFilepath($five_columns_file_path);
+		$success = $plugin->setSampleFilepath($five_col_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with 5 columns");
 
-		$processed_samples = $plugin->processSamples();
+		$five_col_processed_samples = $plugin->processSamples();
 
 		// Pull out the germplasm type for a sample (Expect: Individual)
 
@@ -135,15 +161,15 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
      ****************************************************************************/
 		// Try a samples file with an incorrect number of columns
 		// Sample Filepath
-		$too_few_columns_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
+		$too_few_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
 
 		// Set sample filepath
-		$success = $plugin->setSampleFilepath($too_few_columns_file_path);
+		$success = $plugin->setSampleFilepath($too_few_col_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with too few columns");
 
     $exception_caught = FALSE;
     try {
-      $processed_samples = $plugin->processSamples();
+      $too_few_col_processed_samples = $plugin->processSamples();
     }
     catch ( \Exception $e ) {
       $exception_caught = TRUE;
@@ -154,94 +180,5 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Try samples with more than one organism entry in the database
 
-	}
-
-	/**
-	 * Our version of UnitTestCase::getConfigFactoryStub()
-	 * It is exactly the same at this point but was not available in kernel tests.
-	 * @see https://api.drupal.org/api/drupal/core%21tests%21Drupal%21Tests%21UnitTestCase.php/function/UnitTestCase%3A%3AgetConfigFactoryStub/9
-	 *
-	 * @param array $configs
-	 * 	An associative array of configuration settings whose keys are
-	 * 	configuration object names and whose values are key => value arrays for the
-	 * 	configuration object in question. Defaults to an empty array.
-	 *
-	 * @return \PHPUnit\Framework\MockObject\MockBuilder
-	 * 	A MockBuilder object for the ConfigFactory with the desired return values.
-	 */
-	public function getConfigFactoryStub(array $configs = []) {
-		$config_get_map = [];
-		$config_editable_map = [];
-
-		// Construct the desired configuration object stubs, each with its own
-		// desired return map.
-		foreach ($configs as $config_name => $config_values) {
-
-			// Define a closure over the $config_values, which will be used as a
-			// returnCallback below. This function will mimic
-			// \Drupal\Core\Config\Config::get and allow using dotted keys.
-			$config_get = function ($key = '') use ($config_values) {
-
-				// Allow to pass in no argument.
-				if (empty($key)) {
-					return $config_values;
-				}
-
-				// See if we have the key as is.
-				if (isset($config_values[$key])) {
-					return $config_values[$key];
-				}
-				$parts = explode('.', $key);
-				$value = NestedArray::getValue($config_values, $parts, $key_exists);
-				return $key_exists ? $value : NULL;
-			};
-			$immutable_config_object = $this
-				->getMockBuilder('Drupal\\Core\\Config\\ImmutableConfig')
-				->disableOriginalConstructor()
-				->getMock();
-			$immutable_config_object
-				->expects($this
-				->any())
-				->method('get')
-				->willReturnCallback($config_get);
-			$immutable_config_object
-				->expects($this->any())
-				->method('__sleep')
-				->willReturn([]);
-			$config_get_map[] = [
-				$config_name,
-				$immutable_config_object,
-			];
-			$mutable_config_object = $this
-				->getMockBuilder('Drupal\\Core\\Config\\Config')
-				->disableOriginalConstructor()
-				->getMock();
-			$mutable_config_object
-				->expects($this
-				->any())
-				->method('get')
-				->willReturnCallback($config_get);
-			$config_editable_map[] = [
-				$config_name,
-				$mutable_config_object,
-			];
-		}
-
-		// Construct a config factory with the array of configuration object stubs
-		// as its return map.
-		$config_factory = $this
-			->createMock('Drupal\\Core\\Config\\ConfigFactoryInterface');
-		$config_factory
-			->expects($this
-			->any())
-			->method('get')
-			->willReturnMap($config_get_map);
-		$config_factory
-			->expects($this
-			->any())
-			->method('getEditable')
-			->willReturnMap($config_editable_map);
-
-		return $config_factory;
 	}
 }
