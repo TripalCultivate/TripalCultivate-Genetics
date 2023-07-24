@@ -259,7 +259,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $num_columns = count($header);
     if (!(($num_columns >= 5) && ($num_columns <= 7))) {
       throw new \Exception(
-        t("Unexpected number of columns (%columns) in the samples file: %file", ['@file'=>$sample_file, '@columns'=>$num_columns])
+        t("Unexpected number of columns (@columns) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
       );
     }
 
@@ -287,7 +287,6 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         $germplasm_type = array_shift($current_line);
         // Break our germplasm type into its dbname and accession
         list($germplasm_type_dbname, $germplasm_type_accession) = explode(':', $germplasm_type);
-        // Reminder: check that germplasm_type is in the correct format
         $query = $this->connection->select('1:cvterm', 'cvt')
           ->fields('cvt', ['cvterm_id']);
         // Joins cannot be chained
@@ -296,7 +295,19 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         $query->condition('db.name', $germplasm_type_dbname)
           ->condition('dbx.accession', $germplasm_type_accession);
         $records = $query->execute()->fetchAll();
-        // Check there is only 1 record, otherwise throw an exception
+        // Check there is exactly 1 record, otherwise throw an exception
+        if(!$records) {
+          throw new \Exception(
+            t("No cvterm exists for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
+          );
+          return FALSE;
+        }
+        if(sizeof($records) > 1) {
+          throw new \Exception(
+            t("Multiple records exist for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
+          );
+          return FALSE;
+        }
         $germplasm_type_id = $records[0]->cvterm_id;
       } else {
         // If not provided with a cvterm, grab the default

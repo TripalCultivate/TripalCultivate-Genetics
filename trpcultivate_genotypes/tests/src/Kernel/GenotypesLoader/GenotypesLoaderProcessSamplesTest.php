@@ -24,18 +24,45 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
    */
   protected static $modules = ['trpcultivate_genetics','trpcultivate_genotypes'];
 
-  /**
-   * Test a fake instance of Genotypes Loader Plugin in terms of processing a samples file.
+	/**
+   * Configuration for trpcultivate_genetics module
    *
-   * @group GenotypesLoader
+   * @var config_entity
    */
-  public function testGenotypesLoaderProcessSamples(){
+  private $genetics_config;
+
+	/**
+   * Configuration for trpcultivate_genotypes module
+   *
+   * @var config_entity
+   */
+  private $genotypes_config;
+
+	/**
+	 * The Genotypes Loader plugin object
+	 *
+	 * @var GenotypesLoaderFakePlugin
+	 */
+	protected $plugin;
+
+  /**
+   * Tripal DBX Chado Connection object
+   *
+   * @var ChadoConnection
+   */
+  protected $connection;
+
+	/**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+  	parent::setUp();
 
 		// Ensure we see all logging in tests.
 		\Drupal::state()->set('is_a_test_environment', TRUE);
 
 		// Open connection to Chado
-		$connection = $this->getTestSchema(ChadoTestKernelBase::PREPARE_TEST_CHADO);
+		$this->connection = $this->getTestSchema(ChadoTestKernelBase::PREPARE_TEST_CHADO);
 
 		// Install module configuration and set values
     $this->installConfig(['trpcultivate_genotypes','trpcultivate_genetics']);
@@ -55,24 +82,35 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$configuration = [];
 		$plugin_definition = [];
 		$logger = \Drupal::service('tripal.logger');
-		$plugin = new GenotypesLoaderFakePlugin($configuration,"fake_genotypes_loader",$plugin_definition,$logger,$connection,$config_factory);
-		$this->assertIsObject($plugin, 'Unable to create a Plugin');
-		$this->assertInstanceOf(GenotypesLoaderInterface::class, $plugin,"Returned object is not an instance of GenotypesLoaderInterface.");
+		$this->plugin = new GenotypesLoaderFakePlugin($configuration,"fake_genotypes_loader",$plugin_definition,$logger,$this->connection,$config_factory);
+		$this->assertIsObject($this->plugin, 'Unable to create a Plugin');
+		$this->assertInstanceOf(GenotypesLoaderInterface::class, $this->plugin,"Returned object is not an instance of GenotypesLoaderInterface.");
+	}
+
+  /**
+   * Test processing a samples file with 7 columns, to simulate a real-life example
+   *
+   * @group GenotypesLoader
+   */
+  public function testProcessSamplesSevenColumns(){
+
+		// Assert the plugin was created
+		$this->assertNotNull($this->plugin);
 
 		// Sample Filepath
 		$sample_file_path = __DIR__ . '/../../Fixtures/cats_samples.tsv';
 
 		// Set sample filepath
-		$success = $plugin->setSampleFilepath($sample_file_path);
+		$success = $this->plugin->setSampleFilepath($sample_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath");
 
 		// Get sample filepath
-		$grabbed_sample_file_path = $plugin->getSampleFilepath();
+		$grabbed_sample_file_path = $this->plugin->getSampleFilepath();
 		$this->assertEquals($sample_file_path, $grabbed_sample_file_path, "The sample filepath grabbed by the getter method does not match.");
 
 		// Insert our 2 organisms that are in the file
 		// Felis catus
-		$catus_organism_id = $connection->insert('1:organism')
+		$catus_organism_id = $this->connection->insert('1:organism')
 			->fields([
 				'genus' => 'Felis',
 				'species' => 'catus',
@@ -80,7 +118,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			->execute();
 
 		// Felis silvestris
-		$silvestris_organism_id = $connection->insert('1:organism')
+		$silvestris_organism_id = $this->connection->insert('1:organism')
 			->fields([
 				'genus' => 'Felis',
 				'species' => 'silvestris',
@@ -88,7 +126,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			->execute();
 
 		// Process our samples so that they all get inserted into the database
-		$processed_samples = $plugin->processSamples();
+		$processed_samples = $this->plugin->processSamples();
 
 		// Setup our array with our samples and compare it to the output from our method
 		$samples_array = [
@@ -111,14 +149,14 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Check that our samples are the correct organisms
 		// First check Ross is a Felis catus
-		$Ross_query = $connection->select('1:stock','s')
+		$Ross_query = $this->connection->select('1:stock','s')
     	->fields('s', ['organism_id'])
 			->condition('stock_id', 1, '=');
 		$Ross_record = $Ross_query->execute()->fetchAll();
 		$this->assertEquals($catus_organism_id, $Ross_record[0]->organism_id, "One of the samples that was inserted (Ross) is of the wrong organism.");
 
 		// Second, check Zapelli is a Felis silvestris
-		$Zapelli_query = $connection->select('1:stock','s')
+		$Zapelli_query = $this->connection->select('1:stock','s')
     	->fields('s', ['organism_id'])
 			->condition('stock_id', 17, '=');
 		$Zapelli_record = $Zapelli_query->execute()->fetchAll();
@@ -126,7 +164,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Check that our samples' germplasm are the correct germplasm type
 		// Pull out the cvterm ID for CO_010:0000044
-		$germplasm_type_query = $connection->select('1:cvterm', 'cvt')
+		$germplasm_type_query = $this->connection->select('1:cvterm', 'cvt')
       ->fields('cvt', ['cvterm_id']);
 		$germplasm_type_query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
 		$germplasm_type_query->join('1:db', 'db', 'dbx.db_id = db.db_id');
@@ -134,12 +172,24 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			->condition('dbx.accession', '0000044');
 		$germplasm_type_records = $germplasm_type_query->execute()->fetchAll();
 		$germplasm_type_id = $germplasm_type_records[0]->cvterm_id;
+
 		// Check the cvterm_id for the germplasm Ross
-		$Ross_germ_query = $connection->select('1:stock','s')
+		$Ross_germ_query = $this->connection->select('1:stock','s')
     	->fields('s', ['type_id'])
 			->condition('stock_id', 2, '=');
 		$Ross_germ_record = $Ross_germ_query->execute()->fetchAll();
 		$this->assertEquals($germplasm_type_id, $Ross_germ_record[0]->type_id, "The germplasm being inserted has an unexpected type_id.");
+
+	}
+
+	/**
+   * Test processing a samples file with 5 columns, to simulate a real-life example
+	 * Essentially, we are ensuring that the default organism and germplasm type is
+	 * being set for each sample
+   *
+   * @group GenotypesLoader
+   */
+  public function testProcessSamplesFiveColumns(){
 
 		// Test for 5 columns in our sample file, and ensure the default germplasm
 		// type and organism are being assigned
@@ -147,38 +197,119 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$five_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_5_columns.tsv';
 
 		// Set sample filepath
-		$success = $plugin->setSampleFilepath($five_col_file_path);
+		$success = $this->plugin->setSampleFilepath($five_col_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with 5 columns");
 
-		$five_col_processed_samples = $plugin->processSamples();
+		// Create our Felis catus organism
+		$catus_organism_id = $this->connection->insert('1:organism')
+			->fields([
+				'genus' => 'Felis',
+				'species' => 'catus',
+			])
+			->execute();
 
-		// Pull out the germplasm type for a sample (Expect: Individual)
+		// Set the default organism to Felis catus
+		$success = $this->plugin->setOrganismID($catus_organism_id);
+		$this->assertTrue($success, "Unable to set organism for test file with 5 columns");
 
-		// Pull out the organism for the first sample (Expect: Felis catus)
+		// Process our samples
+		$processed_samples = $this->plugin->processSamples();
 
-		/****************************************************************************
-     *  TESTS for Exceptions
-     ****************************************************************************/
+				// Setup our array with our samples and compare it to the output from our method
+		$samples_array = [
+			'Ross' => 1,
+			'Prado' => 3,
+			'Ash' => 5,
+			'Piero' => 7,
+			'Tai' => 9,
+			'Beverly' => 11,
+			'Argent' => 13,
+			'Trenus' => 15,
+			'Zapelli' => 17
+		];
+
+		// Check that the number of stocks match what we expect
+    $this->assertEquals(count($samples_array), count($processed_samples), "The number of samples that were processed is incorrect.");
+
+		// Compare our returned samples array with what we expect to get
+		$this->assertEquals($samples_array, $processed_samples, "The returned samples array is not what was expected.");
+
+		// Pull out the organism for last sample (in the previous test, should have
+		// been Felis Silvestris, now should be set as Felis catus)
+		$Zapelli_query = $this->connection->select('1:stock','s')
+    	->fields('s', ['organism_id'])
+			->condition('stock_id', 17, '=');
+		$Zapelli_record = $Zapelli_query->execute()->fetchAll();
+		$this->assertEquals($catus_organism_id, $Zapelli_record[0]->organism_id, "One of the samples that was inserted (Zapelli) is of the wrong organism.");
+
+		// Pull out the germplasm type for a sample (terms.germplasm_type = 10)
+		$Prado_germ_query = $this->connection->select('1:stock','s')
+    	->fields('s', ['type_id'])
+			->condition('stock_id', 4, '=');
+		$Prado_germ_record = $Prado_germ_query->execute()->fetchAll();
+		$this->assertEquals($Prado_germ_record[0]->type_id, 10, "The germplasm being inserted has an unexpected type_id.");
+	}
+
+	/**
+   * Test processing a samples file where exceptions are intentially being triggered
+	 * by the formatting or content of the samples file
+   *
+   * @group GenotypesLoader
+   */
+  public function testProcessSamplesExceptions(){
+
 		// Try a samples file with an incorrect number of columns
 		// Sample Filepath
 		$too_few_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
 
 		// Set sample filepath
-		$success = $plugin->setSampleFilepath($too_few_col_file_path);
+		$success = $this->plugin->setSampleFilepath($too_few_col_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with too few columns");
 
     $exception_caught = FALSE;
     try {
-      $too_few_col_processed_samples = $plugin->processSamples();
+      $too_few_col_processed_samples = $this->plugin->processSamples();
     }
     catch ( \Exception $e ) {
-      $exception_caught = TRUE;
+     $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for detecting a samples files with the wrong number of columns.");
 
+		// Try a germplasm type with the wrong format
+		$wrong_germ_type_format_file_path = __DIR__ . '/../../Fixtures/cats_samples_wrong_germ_type.tsv';
+		$success = $this->plugin->setSampleFilepath($wrong_germ_type_format_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with a non-existant organism");
+
+    $exception_caught = FALSE;
+    try {
+      $wrong_germ_type_format_processed_samples = $this->plugin->processSamples();
+    }
+    catch ( \Exception $e ) {
+    $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for detecting the wrong germplasm type in the samples file.");
+
+		// Try germplasm with multiple copies of the cvterm accession in the database
+		// create 3 records:
+		// 1. In the dbxref table where db id = 1
+		// 2. Create 2 records in cvterm table with different names but same dbxref id as 1.
+
 		// Try samples with an organism that doesn't exist in the database
+		$nonexistant_org_file_path = __DIR__ . '/../../Fixtures/cats_samples_nonexistant_org.tsv';
+		$success = $this->plugin->setSampleFilepath($nonexistant_org_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with a non-existant organism");
+
+		$exception_caught = FALSE;
+    try {
+      $nonexistant_org_processed_samples = $this->plugin->processSamples();
+    }
+    catch ( \Exception $e ) {
+     $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for detecting inserting a sample with nonexistant organism.");
 
 		// Try samples with more than one organism entry in the database
+		// First insert another Felis catus organism with subspecies
 
 	}
 }
