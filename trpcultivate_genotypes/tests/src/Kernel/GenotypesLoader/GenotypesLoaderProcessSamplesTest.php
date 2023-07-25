@@ -65,7 +65,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$this->connection = $this->getTestSchema(ChadoTestKernelBase::PREPARE_TEST_CHADO);
 
 		// Install module configuration and set values
-    $this->installConfig(['trpcultivate_genotypes','trpcultivate_genetics']);
+  	$this->installConfig(['trpcultivate_genotypes','trpcultivate_genetics']);
     $config_factory = \Drupal::configFactory();
 		$genetics_config = $config_factory->getEditable('trpcultivate_genetics.settings');
 		$genetics_config->set('terms.sample_type', 9);
@@ -76,6 +76,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$genotypes_config->set('modes.samples_mode', 1);
 		$genotypes_config->set('modes.germplasm_mode', 1);
 		$genotypes_config->save();
+		$this->genotypes_config = $genotypes_config;
 
 		// Create the Genotypes Loader object
 		// Configuration should be any key value pairs specific to Genotypes Loader plugin
@@ -151,14 +152,14 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		// First check Ross is a Felis catus
 		$Ross_query = $this->connection->select('1:stock','s')
     	->fields('s', ['organism_id'])
-			->condition('stock_id', 1, '=');
+		  ->condition('stock_id', 1, '=');
 		$Ross_record = $Ross_query->execute()->fetchAll();
 		$this->assertEquals($catus_organism_id, $Ross_record[0]->organism_id, "One of the samples that was inserted (Ross) is of the wrong organism.");
 
 		// Second, check Zapelli is a Felis silvestris
 		$Zapelli_query = $this->connection->select('1:stock','s')
     	->fields('s', ['organism_id'])
-			->condition('stock_id', 17, '=');
+		  ->condition('stock_id', 17, '=');
 		$Zapelli_record = $Zapelli_query->execute()->fetchAll();
 		$this->assertEquals($silvestris_organism_id, $Zapelli_record[0]->organism_id, "One of the samples that was inserted (Zapelli) is of the wrong organism.");
 
@@ -179,7 +180,6 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			->condition('stock_id', 2, '=');
 		$Ross_germ_record = $Ross_germ_query->execute()->fetchAll();
 		$this->assertEquals($germplasm_type_id, $Ross_germ_record[0]->type_id, "The germplasm being inserted has an unexpected type_id.");
-
 	}
 
 	/**
@@ -258,6 +258,32 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
    */
   public function testProcessSamplesExceptions(){
 
+		// Change the config mode from insert to select only for both samples and germplasm
+		$this->genotypes_config->set('modes.samples_mode', 0);
+		$this->genotypes_config->set('modes.germplasm_mode', 0);
+		$this->genotypes_config->save();
+
+		// Set sample filepath
+		$sample_file_path = __DIR__ . '/../../Fixtures/cats_samples_5_columns.tsv';
+		$success = $this->plugin->setSampleFilepath($sample_file_path);
+
+		$catus_organism_id = $this->connection->insert('1:organism')
+		->fields([
+			'genus' => 'Felis',
+			'species' => 'catus',
+		])
+		->execute();
+
+		// Now try to select
+		$exception_caught = FALSE;
+    try {
+			$processed_samples = $this->plugin->processSamples();
+    }
+    catch ( \Exception $e ) {
+     $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for trying to select samples that do not exist.");
+		
 		// Try a samples file with an incorrect number of columns
 		// Sample Filepath
 		$too_few_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
@@ -273,7 +299,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     catch ( \Exception $e ) {
      $exception_caught = TRUE;
     }
-    $this->assertTrue($exception_caught, "Did not catch exception for detecting a samples files with the wrong number of columns.");
+    $this->assertTrue($exception_caught, "Did not catch exception for detecting a samples file with the wrong number of columns.");
 
 		// Try a germplasm type with the wrong format
 		$wrong_germ_type_format_file_path = __DIR__ . '/../../Fixtures/cats_samples_wrong_germ_type.tsv';
@@ -310,6 +336,20 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Try samples with more than one organism entry in the database
 		// First insert another Felis catus organism with subspecies
+		$dup_catus_organism_id = $this->connection->insert('1:organism')
+		->fields([
+			'genus' => 'Felis',
+			'species' => 'catus',
+			'infraspecific_name' => 'silvestris'
+		])
+		->execute();
+
+		// Set the input filepath to our working example with 7 columns
+		$seven_col_file_path = __DIR__ . '/../../Fixtures/cats_samples.tsv';
+		$success = $this->plugin->setSampleFilepath($seven_col_file_path);
+
+		//$dup_org_processed_samples = $this->plugin->processSamples();
+
 
 	}
 }
