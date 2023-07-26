@@ -316,9 +316,29 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     $this->assertTrue($exception_caught, "Did not catch exception for detecting the wrong germplasm type in the samples file.");
 
 		// Try germplasm with multiple copies of the cvterm accession in the database
-		// create 3 records:
+		// Create 3 records:
 		// 1. In the dbxref table where db id = 1
+		$dbxref_id = $this->connection->insert('1:dbxref')
+		->fields([
+			'db_id' => 1,
+			'accession' => 012345,
+		])
+		->execute();
 		// 2. Create 2 records in cvterm table with different names but same dbxref id as 1.
+		$cvterm_1 = $this->connection->insert('1:cvterm')
+		->fields([
+			'name' => 'test1',
+			'cv_id' => '1',
+			'dbxref_id' => $dbxref_id,
+		])
+		->execute();
+		$cvterm2 = $this->connection->insert('1:cvterm')
+		->fields([
+			'name' => 'test2',
+			'cv_id' => '1',
+			'dbxref_id' => $dbxref_id,
+		])
+		->execute();
 
 		// Try samples with an organism that doesn't exist in the database
 		$nonexistant_org_file_path = __DIR__ . '/../../Fixtures/cats_samples_nonexistant_org.tsv';
@@ -333,23 +353,6 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
      $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for detecting inserting a sample with nonexistant organism.");
-
-		// Try samples with more than one organism entry in the database
-		// First insert another Felis catus organism with subspecies
-		$dup_catus_organism_id = $this->connection->insert('1:organism')
-		->fields([
-			'genus' => 'Felis',
-			'species' => 'catus',
-			'infraspecific_name' => 'silvestris'
-		])
-		->execute();
-
-		// Set the input filepath to our working example with 7 columns
-		$seven_col_file_path = __DIR__ . '/../../Fixtures/cats_samples.tsv';
-		$success = $this->plugin->setSampleFilepath($seven_col_file_path);
-
-		//$dup_org_processed_samples = $this->plugin->processSamples();
-
 
 	}
 }
