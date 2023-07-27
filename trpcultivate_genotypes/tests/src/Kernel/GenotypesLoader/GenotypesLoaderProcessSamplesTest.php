@@ -255,6 +255,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 	 * by the formatting or content of the samples file
    *
    * @group GenotypesLoader
+	 * @group ProcessSamplesExceptions
    */
   public function testProcessSamplesExceptions(){
 
@@ -283,7 +284,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
      $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for trying to select samples that do not exist.");
-		
+
 		// Try a samples file with an incorrect number of columns
 		// Sample Filepath
 		$too_few_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
@@ -316,15 +317,18 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     $this->assertTrue($exception_caught, "Did not catch exception for detecting the wrong germplasm type in the samples file.");
 
 		// Try germplasm with multiple copies of the cvterm accession in the database
+		// First let's drop constraints on the cvterm table to allow us to insert a duplicate
+		$this->connection->query('ALTER TABLE {1:cvterm} DROP CONSTRAINT cvterm_c2');
+		//$this->connection->schema()->dropUniqueKey('cvterm', 'cvterm_c2');
 		// Create 3 records:
-		// 1. In the dbxref table where db id = 1
+		// 1. In the dbxref table where db_id = 1
 		$dbxref_id = $this->connection->insert('1:dbxref')
 		->fields([
 			'db_id' => 1,
 			'accession' => 012345,
 		])
 		->execute();
-		// 2. Create 2 records in cvterm table with different names but same dbxref id as 1.
+		// 2. Create 2 records in cvterm table with different names but same dbxref_id as 1.
 		$cvterm_1 = $this->connection->insert('1:cvterm')
 		->fields([
 			'name' => 'test1',
@@ -340,10 +344,16 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		])
 		->execute();
 
+		$dup_germ_type_file_path = __DIR__ . '/../../Fixtures/cats_samples_dup_germ_type.tsv';
+		$success = $this->plugin->setSampleFilepath($dup_germ_type_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with a duplicate germplasm type.");
+
+		$dup_germ_type_processed_samples = $this->plugin->processSamples();
+
 		// Try samples with an organism that doesn't exist in the database
 		$nonexistant_org_file_path = __DIR__ . '/../../Fixtures/cats_samples_nonexistant_org.tsv';
 		$success = $this->plugin->setSampleFilepath($nonexistant_org_file_path);
-		$this->assertTrue($success, "Unable to set sample filepath for test file with a non-existant organism");
+		$this->assertTrue($success, "Unable to set sample filepath for test file with a non-existant organism.");
 
 		$exception_caught = FALSE;
     try {
