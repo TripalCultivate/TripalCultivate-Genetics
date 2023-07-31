@@ -287,11 +287,8 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     }
     $this->assertTrue($exception_caught, "Did not catch exception for trying to select samples that do not exist.");
 
-		// Try a samples file with an incorrect number of columns
-		// Sample Filepath
+		// Try a samples file with less than the minimum number of columns
 		$too_few_col_file_path = __DIR__ . '/../../Fixtures/cats_samples_4_columns.tsv';
-
-		// Set sample filepath
 		$success = $this->plugin->setSampleFilepath($too_few_col_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with too few columns");
 
@@ -372,5 +369,33 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
      $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for inserting a sample with nonexistant organism.");
+
+		// Change the config back to insert only since the next test shouldn't throw
+		// an exception but would complain once it tries to look for samples
+		$this->genotypes_config->set('modes.samples_mode', 1);
+		$this->genotypes_config->set('modes.germplasm_mode', 1);
+		$this->genotypes_config->save();
+		// Try a samples file with more than the expected number of columns
+		$eight_col_sample_file_path = __DIR__ . '/../../Fixtures/cats_samples_8_columns.tsv';
+		$success = $this->plugin->setSampleFilepath($eight_col_sample_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with 8 columns");
+
+		// More than 7 columns does not trigger an exception, but should give a warning
+		// It's proving difficult to check for the warning, but I'm leaving the function
+		// call to prove that it does allow for more than 7 columns :)
+		//ob_start();
+		$eight_col_processed_samples = $this->plugin->processSamples();
+		//$warning_message = ob_get_contents();
+		//$warning_caught = preg_match("/WARNING/", $warning_message);
+		//$this->assertTrue($warning_caught, "Did not catch warning for more than 7 columns in a samples file.");
+		//ob_clean();
+
+		// Check that our sample Ross was inserted
+		$Ross_sample_name = 'Ross_110201';
+		$Ross_query = $this->connection->select('1:stock','s')
+    	->fields('s', ['name'])
+		  ->condition('stock_id', 1, '=');
+		$Ross_record = $Ross_query->execute()->fetchAll();
+		$this->assertEquals($Ross_sample_name, $Ross_record[0]->name, "The sample inserted by the 8 column sample file failed to insert Ross_110201.");
 	}
 }

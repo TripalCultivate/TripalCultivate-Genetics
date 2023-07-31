@@ -257,15 +257,20 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     // Grab the header and count the number of columns
     $header = fgetcsv($SAMPLES_FILE, 0, "\t");
     $num_columns = count($header);
-    if (!(($num_columns >= 5) && ($num_columns <= 7))) {
+    if ($num_columns < 5) {
       throw new \Exception(
-        t("Unexpected number of columns (@columns) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
+        t("A minimum of 5 columns are required (@columns detected) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
       );
+    } else if ($num_columns > 7) {
+      // We don't need to throw an exception here, but let's warn the user in case
+      // the extra columns were unintentional
+      $this->logger->notice("Detected more than 7 columns in the samples file. Extra columns will be ignored.");
     }
 
-    // Collect our default germplasm type and organism
-    $default_germplasm_type_id = $genetics_config->get('terms.germplasm_type');
-    $default_organism_id = $this->getOrganismID();
+    // Collect our default germplasm type and organism. If we have this information
+    // in the samples file, then these variables will get overwritten
+    $germplasm_type_id = $genetics_config->get('terms.germplasm_type');
+    $organism_id = $this->getOrganismID();
 
     // Iterate through each row to grab all of the samples
     while(!feof($SAMPLES_FILE)) {
@@ -309,15 +314,12 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
           return FALSE;
         }
         $germplasm_type_id = $records[0]->cvterm_id;
-      } else {
-        // If not provided with a cvterm, grab the default
-        $germplasm_type_id = $default_germplasm_type_id;
       }
       // Column 7: User can optionally supply an organism for each germplasm if
       // they are inserting germplasm into the database. We need to allow spaces
       // between the genus and species as well as infraspecific organisms, so we'll
       // use a method from Tripal's API to look it up in the database
-      if ($num_columns == 7) {
+      if ($num_columns >= 7) {
         $organism_name = array_shift($current_line);
         // Grab the organism ID using the organism name and genus supplied in the samples file
         $organism_array = chado_get_organism_id_from_scientific_name($organism_name);
@@ -335,9 +337,6 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
           );
         }
         $organism_id = $organism_array[0];
-      } else {
-        // If not provided with an organism, use the default
-        $organism_id = $default_organism_id;
       }
 
       /** --------------------------
