@@ -184,7 +184,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 	/**
    * Test processing a samples file with 5 columns, to simulate a real-life example
-	 * Essentially, we are ensuring that the default organism and germplasm type is
+	 * Essentially, we are ensuring that the default organism and germplasm type are
 	 * being set for each sample
    *
    * @group GenotypesLoader
@@ -215,7 +215,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		// Process our samples
 		$processed_samples = $this->plugin->processSamples();
 
-				// Setup our array with our samples and compare it to the output from our method
+		// Setup our array with our samples and compare it to the output from our method
 		$samples_array = [
 			'Ross' => 1,
 			'Prado' => 3,
@@ -267,7 +267,9 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		// Set sample filepath
 		$sample_file_path = __DIR__ . '/../../Fixtures/cats_samples_5_columns.tsv';
 		$success = $this->plugin->setSampleFilepath($sample_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with 5 columns");
 
+		// Insert our felis catus organism
 		$catus_organism_id = $this->connection->insert('1:organism')
 		->fields([
 			'genus' => 'Felis',
@@ -275,7 +277,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		])
 		->execute();
 
-		// Now try to select
+		// Now try to process samples when we can only select and not insert them
 		$exception_caught = FALSE;
     try {
 			$processed_samples = $this->plugin->processSamples();
@@ -300,7 +302,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     catch ( \Exception $e ) {
      $exception_caught = TRUE;
     }
-    $this->assertTrue($exception_caught, "Did not catch exception for detecting a samples file with the wrong number of columns.");
+    $this->assertTrue($exception_caught, "Did not catch exception for too few columns in a samples file.");
 
 		// Try a germplasm type with the wrong format
 		$wrong_germ_type_format_file_path = __DIR__ . '/../../Fixtures/cats_samples_wrong_germ_type.tsv';
@@ -314,32 +316,32 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     catch ( \Exception $e ) {
     $exception_caught = TRUE;
     }
-    $this->assertTrue($exception_caught, "Did not catch exception for detecting the wrong germplasm type in the samples file.");
+    $this->assertTrue($exception_caught, "Did not catch exception for the wrong germplasm type in the samples file.");
 
 		// Try germplasm with multiple copies of the cvterm accession in the database
 		// First let's drop constraints on the cvterm table to allow us to insert a duplicate
 		$this->connection->query('ALTER TABLE {1:cvterm} DROP CONSTRAINT cvterm_c2');
-		//$this->connection->schema()->dropUniqueKey('cvterm', 'cvterm_c2');
 		// Create 3 records:
-		// 1. In the dbxref table where db_id = 1
+		// 1) In the dbxref table where db_id = 14 (local)
 		$dbxref_id = $this->connection->insert('1:dbxref')
 		->fields([
-			'db_id' => 1,
-			'accession' => 012345,
+			'db_id' => '14',
+			'accession' => '012345',
 		])
 		->execute();
-		// 2. Create 2 records in cvterm table with different names but same dbxref_id as 1.
+		// 2) Create a record in the cvterm table with the same dbxref_id as 1)
 		$cvterm_1 = $this->connection->insert('1:cvterm')
 		->fields([
 			'name' => 'test1',
-			'cv_id' => '1',
+			'cv_id' => '2',
 			'dbxref_id' => $dbxref_id,
 		])
 		->execute();
+		// 3) Insert a duplicate cvterm that has a different name but same cv_id and dbxref_id
 		$cvterm2 = $this->connection->insert('1:cvterm')
 		->fields([
 			'name' => 'test2',
-			'cv_id' => '1',
+			'cv_id' => '2',
 			'dbxref_id' => $dbxref_id,
 		])
 		->execute();
@@ -348,7 +350,14 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$success = $this->plugin->setSampleFilepath($dup_germ_type_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with a duplicate germplasm type.");
 
-		$dup_germ_type_processed_samples = $this->plugin->processSamples();
+		$exception_caught = FALSE;
+    try {
+			$dup_germ_type_processed_samples = $this->plugin->processSamples();
+		}
+    catch ( \Exception $e ) {
+    $exception_caught = TRUE;
+    }
+    $this->assertTrue($exception_caught, "Did not catch exception for a duplicate germplasm type in the samples file.");
 
 		// Try samples with an organism that doesn't exist in the database
 		$nonexistant_org_file_path = __DIR__ . '/../../Fixtures/cats_samples_nonexistant_org.tsv';
@@ -362,7 +371,6 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     catch ( \Exception $e ) {
      $exception_caught = TRUE;
     }
-    $this->assertTrue($exception_caught, "Did not catch exception for detecting inserting a sample with nonexistant organism.");
-
+    $this->assertTrue($exception_caught, "Did not catch exception for inserting a sample with nonexistant organism.");
 	}
 }
