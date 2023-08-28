@@ -370,10 +370,10 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
     }
     $this->assertTrue($exception_caught, "Did not catch exception for inserting a sample with nonexistant organism.");
 
-		// Change the config back to insert only since the next test shouldn't throw
+		// Change the config to select and insert since the next test shouldn't throw
 		// an exception but would complain once it tries to look for samples
-		$this->genotypes_config->set('modes.samples_mode', 1);
-		$this->genotypes_config->set('modes.germplasm_mode', 1);
+		$this->genotypes_config->set('modes.samples_mode', 2);
+		$this->genotypes_config->set('modes.germplasm_mode', 2);
 		$this->genotypes_config->save();
 		// Try a samples file with more than the expected number of columns
 		$eight_col_sample_file_path = __DIR__ . '/../../Fixtures/cats_samples_8_columns.tsv';
@@ -397,5 +397,22 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		  ->condition('stock_id', 1, '=');
 		$Ross_record = $Ross_query->execute()->fetchAll();
 		$this->assertEquals($Ross_sample_name, $Ross_record[0]->name, "The sample inserted by the 8 column sample file failed to insert Ross_110201.");
+
+		// Try a samples file where some of the optional columns (6;germplasm type & 7; organism) are left blank
+		// but some are filled in
+		$optional_blanks_sample_file_path = __DIR__ . '/../../Fixtures/cats_samples_optional_blanks.tsv';
+		$success = $this->plugin->setSampleFilepath($optional_blanks_sample_file_path);
+		$this->assertTrue($success, "Unable to set sample filepath for test file with some optional blank columns");
+
+		// Insert Felis Silvertris since we need it to ensure it does get inserted in the next step
+		$silvestris_organism_id = $this->connection->insert('1:organism')
+		->fields([
+			'genus' => 'Felis',
+			'species' => 'silvestris',
+		])
+		->execute();
+
+		// We don't expect an exception to be thrown, but need to ensure the right values are inserted
+		$optional_blanks_processed_samples = $this->plugin->processSamples();
 	}
 }

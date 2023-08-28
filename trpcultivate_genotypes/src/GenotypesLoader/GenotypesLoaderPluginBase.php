@@ -256,7 +256,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
     // Grab the header and count the number of columns
     $header = fgetcsv($SAMPLES_FILE, 0, "\t");
-    $num_columns = count($header);
+/*     $num_columns = count($header);
     if ($num_columns < 5) {
       throw new \Exception(
         t("A minimum of 5 columns are required (@columns detected) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
@@ -265,7 +265,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // We don't need to throw an exception here, but let's warn the user in case
       // the extra columns were unintentional
       $this->logger->notice("Detected more than 7 columns in the samples file. Extra columns will be ignored.");
-    }
+    } */
 
     // Collect our default germplasm type and organism. If we have this information
     // in the samples file, then these variables will get overwritten
@@ -276,6 +276,17 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     while(!feof($SAMPLES_FILE)) {
       $current_line = fgetcsv($SAMPLES_FILE, 0, "\t");
       if (empty($current_line)) continue;
+      // Check the number of columns in our row
+      $num_columns = count($current_line);
+      if ($num_columns < 5) {
+        throw new \Exception(
+          t("A minimum of 5 columns are required (@columns detected) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
+        );
+      } else if ($num_columns > 7) {
+        // We don't need to throw an exception here, but let's warn the user in case
+        // the extra columns were unintentional
+        $this->logger->notice("Detected more than 7 columns in the samples file. Extra columns will be ignored.");
+      }
 
       // Column 1: DNA source (name should match sample in the genotype input file)
       $source_name = array_shift($current_line);
@@ -290,30 +301,32 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // Column 6: User can optionally supply a stock_type for each germplasm if they are inserting
       if ($num_columns >= 6) {
         $germplasm_type = array_shift($current_line);
-        // Break our germplasm type into its dbname and accession
-        list($germplasm_type_dbname, $germplasm_type_accession) = explode(':', $germplasm_type);
-        $query = $this->connection->select('1:cvterm', 'cvt')
-          ->fields('cvt', ['cvterm_id']);
-        // Joins cannot be chained
-        $query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
-        $query->join('1:db', 'db', 'dbx.db_id = db.db_id');
-        $query->condition('db.name', $germplasm_type_dbname)
-          ->condition('dbx.accession', $germplasm_type_accession);
-        $records = $query->execute()->fetchAll();
-        // Check there is exactly 1 record, otherwise throw an exception
-        if(!$records) {
-          throw new \Exception(
-            t("No cvterm exists for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
-          );
-          return FALSE;
+        if (!empty($germplasm_type)) {
+          // Break our germplasm type into its dbname and accession
+          list($germplasm_type_dbname, $germplasm_type_accession) = explode(':', $germplasm_type);
+          $query = $this->connection->select('1:cvterm', 'cvt')
+            ->fields('cvt', ['cvterm_id']);
+          // Joins cannot be chained
+          $query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
+          $query->join('1:db', 'db', 'dbx.db_id = db.db_id');
+          $query->condition('db.name', $germplasm_type_dbname)
+            ->condition('dbx.accession', $germplasm_type_accession);
+          $records = $query->execute()->fetchAll();
+          // Check there is exactly 1 record, otherwise throw an exception
+          if(!$records) {
+            throw new \Exception(
+              t("No cvterm exists for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
+            );
+            return FALSE;
+          }
+          if(sizeof($records) > 1) {
+            throw new \Exception(
+              t("Multiple records exist for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
+            );
+            return FALSE;
+          }
+          $germplasm_type_id = $records[0]->cvterm_id;
         }
-        if(sizeof($records) > 1) {
-          throw new \Exception(
-            t("Multiple records exist for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
-          );
-          return FALSE;
-        }
-        $germplasm_type_id = $records[0]->cvterm_id;
       }
       // Column 7: User can optionally supply an organism for each germplasm if
       // they are inserting germplasm into the database. We need to allow spaces
@@ -321,22 +334,24 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // use a method from Tripal's API to look it up in the database
       if ($num_columns >= 7) {
         $organism_name = array_shift($current_line);
-        // Grab the organism ID using the organism name and genus supplied in the samples file
-        $organism_array = chado_get_organism_id_from_scientific_name($organism_name);
-        //print_r($organism_array);
-        if (!$organism_array) {
-          throw new \Exception(
-            t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism_name])
-          );
+        if (!empty($organism_name)) {
+          // Grab the organism ID using the organism name and genus supplied in the samples file
+          $organism_array = chado_get_organism_id_from_scientific_name($organism_name);
+          //print_r($organism_array);
+          if (!$organism_array) {
+            throw new \Exception(
+              t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism_name])
+            );
+          }
+          // We also want to check if we were given only one value back, as there is
+          // potential to retrieve multiple IDs using that function
+          if (is_array($organism_array) && (count($organism_array) > 1)) {
+            throw new \Exception(
+              t("ERROR: Retrieved more than one organism ID for \"@organism_name\" when only 1 was expected.", ['@organism_name' => $organism_name])
+            );
+          }
+          $organism_id = $organism_array[0];
         }
-        // We also want to check if we were given only one value back, as there is
-        // potential to retrieve multiple IDs using that function
-        if (is_array($organism_array) && (count($organism_array) > 1)) {
-          throw new \Exception(
-            t("ERROR: Retrieved more than one organism ID for \"@organism_name\" when only 1 was expected.", ['@organism_name' => $organism_name])
-          );
-        }
-        $organism_id = $organism_array[0];
       }
 
       /** --------------------------
