@@ -404,7 +404,11 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		$success = $this->plugin->setSampleFilepath($optional_blanks_sample_file_path);
 		$this->assertTrue($success, "Unable to set sample filepath for test file with some optional blank columns");
 
-		// Insert Felis Silvertris since we need it to ensure it does get inserted in the next step
+		// Set the default organism to Felis catus
+		$success = $this->plugin->setOrganismID($catus_organism_id);
+		$this->assertTrue($success, "Unable to set default organism just before test with optional blank columns");
+
+		// Insert Felis Silvestris since we need it to ensure that stock Zapelli has this as its organism
 		$silvestris_organism_id = $this->connection->insert('1:organism')
 		->fields([
 			'genus' => 'Felis',
@@ -414,5 +418,34 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// We don't expect an exception to be thrown, but need to ensure the right values are inserted
 		$optional_blanks_processed_samples = $this->plugin->processSamples();
+
+		// Check if Ash (stock ID = 5) was correctly assigned Felis Silvestris as an organism
+		$Ash_query = $this->connection->select('1:stock','s')
+    	->fields('s', ['organism_id'])
+			->condition('stock_id', 5, '=');
+		$Ash_record = $Ash_query->execute()->fetchAll();
+		$this->assertEquals($silvestris_organism_id, $Ash_record[0]->organism_id, "One of the samples that was inserted (Ash) is of the wrong organism.");
+
+		// Check that Piero (stock ID = 7, directly after Ash) is assigned the default organism (Felis catus)
+		$Piero_query = $this->connection->select('1:stock','s')
+			->fields('s', ['organism_id'])
+			->condition('stock_id', 7, '=');
+		$Piero_record = $Piero_query->execute()->fetchAll();
+		$this->assertEquals($catus_organism_id, $Piero_record[0]->organism_id, "One of the samples that was inserted (Piero) is of the wrong organism.");
+
+		// Pull out the germplasm type for a sample with the default (terms.germplasm_type = 10)
+		$Prado_germ_query = $this->connection->select('1:stock','s')
+    	->fields('s', ['type_id'])
+			->condition('stock_id', 4, '=');
+		$Prado_germ_record = $Prado_germ_query->execute()->fetchAll();
+		$this->assertEquals($Prado_germ_record[0]->type_id, 10, "The germplasm being inserted has an unexpected type_id.");
+		
+		// Pull out germplasm type for a sample where it was specified in the samples file
+		$germplasm_type_id = $this->getCVtermID('CO_010','0000044');
+		$Ash_germ_query = $this->connection->select('1:stock','s')
+    	->fields('s', ['type_id'])
+			->condition('stock_id', 6, '=');
+		$Ash_germ_record = $Ash_germ_query->execute()->fetchAll();
+		$this->assertEquals($Ash_germ_record[0]->type_id, $germplasm_type_id, "The germplasm being inserted has an unexpected type_id.");
 	}
 }

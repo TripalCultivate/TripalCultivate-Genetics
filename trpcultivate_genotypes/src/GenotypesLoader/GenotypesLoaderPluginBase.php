@@ -254,18 +254,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     // Open the sample mapping file
     $SAMPLES_FILE = fopen($sample_file, 'r');
 
-    // Grab the header and count the number of columns
+    // Grab the header - not doing anything with it at this time
     $header = fgetcsv($SAMPLES_FILE, 0, "\t");
-/*     $num_columns = count($header);
-    if ($num_columns < 5) {
-      throw new \Exception(
-        t("A minimum of 5 columns are required (@columns detected) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
-      );
-    } else if ($num_columns > 7) {
-      // We don't need to throw an exception here, but let's warn the user in case
-      // the extra columns were unintentional
-      $this->logger->notice("Detected more than 7 columns in the samples file. Extra columns will be ignored.");
-    } */
 
     // Collect our default germplasm type and organism. If we have this information
     // in the samples file, then these variables will get overwritten
