@@ -165,14 +165,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
 		// Check that our samples' germplasm are the correct germplasm type
 		// Pull out the cvterm ID for CO_010:0000044
-		$germplasm_type_query = $this->connection->select('1:cvterm', 'cvt')
-      ->fields('cvt', ['cvterm_id']);
-		$germplasm_type_query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
-		$germplasm_type_query->join('1:db', 'db', 'dbx.db_id = db.db_id');
-		$germplasm_type_query->condition('db.name', 'CO_010')
-			->condition('dbx.accession', '0000044');
-		$germplasm_type_records = $germplasm_type_query->execute()->fetchAll();
-		$germplasm_type_id = $germplasm_type_records[0]->cvterm_id;
+		$germplasm_type_id = $this->getCVtermID('CO_010','0000044');
 
 		// Check the cvterm_id for the germplasm Ross
 		$Ross_germ_query = $this->connection->select('1:stock','s')
