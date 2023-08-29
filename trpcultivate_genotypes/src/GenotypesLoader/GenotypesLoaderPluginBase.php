@@ -257,11 +257,6 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     // Grab the header - not doing anything with it at this time
     $header = fgetcsv($SAMPLES_FILE, 0, "\t");
 
-    // Collect our default germplasm type and organism. If we have this information
-    // in the samples file, then these variables will get overwritten
-    $germplasm_type_id = $genetics_config->get('terms.germplasm_type');
-    $organism_id = $this->getOrganismID();
-
     // Iterate through each row to grab all of the samples
     while(!feof($SAMPLES_FILE)) {
       $current_line = fgetcsv($SAMPLES_FILE, 0, "\t");
@@ -277,6 +272,11 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         // the extra columns were unintentional
         $this->logger->notice("Detected more than 7 columns in the samples file. Extra columns will be ignored.");
       }
+
+      // Collect our default germplasm type and organism. If we have this information
+      // in the samples file, then these variables will get overwritten
+      $germplasm_type_id = $genetics_config->get('terms.germplasm_type');
+      $organism_id = $this->getOrganismID();
 
       // Column 1: DNA source (name should match sample in the genotype input file)
       $source_name = array_shift($current_line);
