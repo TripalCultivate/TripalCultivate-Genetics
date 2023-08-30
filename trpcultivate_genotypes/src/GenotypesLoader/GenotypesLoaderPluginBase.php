@@ -5,6 +5,7 @@ namespace Drupal\trpcultivate_genotypes\GenotypesLoader;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\tripal\Services\TripalLogger;
 use Drupal\tripal_chado\Database\ChadoConnection;
+use \Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -14,9 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class GenotypesLoaderPluginBase extends PluginBase implements GenotypesLoaderInterface, ContainerFactoryPluginInterface {
 
   /**
-   * The chado.stock.organism_id of the samples in the samples file. 
+   * The chado.stock.organism_id of the samples in the samples file.
    * This must already exist.
-   * 
+   *
    * @var integer
    */
   protected $organism_id;
@@ -24,16 +25,16 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * The chado.project.project_id that these genotypes are grouped under.
    * This must already exist.
-   * 
+   *
    * @var integer
    */
   protected $project_id;
 
   /**
-   * The cvterm_id of the subtype of variant of the genotypes being inserted 
+   * The cvterm_id of the subtype of variant of the genotypes being inserted
    * For example, if the variant type is sequence_variant, the subtype can be one of SNP, MNP, indel, etc.
    * This must already exist.
-   * 
+   *
    * @var integer
    */
   protected $variant_subtype_id;
@@ -42,7 +43,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * The cvterm_id of the subtype of marker of the genotypes being inserted
    * For example, if the marker type is genetic_marker, the subtype can be one of "Exome Capture", "GBS", "KASPar", etc.
    * This must already exist.
-   * 
+   *
    * @var integer
    */
   protected $marker_subtype_id;
@@ -50,24 +51,32 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   /**
    * The type of input file containing the genotypes
    * Currently, this must be one of: vcf, matrix, legacy
-   * 
+   *
    * @var string
    */
   protected $file_type;
 
   /**
    * The filepath of the input file containing the genotypes
-   * 
+   *
    * @var string
    */
   protected $input_file;
 
   /**
    * The filepath of the tab-delimited file specifying each sample name in the genotypes file
-   * 
+   *
    * @var string
    */
   protected $sample_file;
+
+  /**
+   * An array of the sample names within the genotypes input file, associated with their stock IDs
+   * [sample_source_name] => [stock_id]
+   *
+   * @var array
+   */
+  protected $samples;
 
   /**
    * The logger for reporting progress, warnings and errors to admin.
@@ -82,6 +91,13 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * @var Drupal\tripal_chado\Database\ChadoConnection
    */
   protected $connection;
+
+  /**
+   * The service for retreiving configuration values.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $config_factory;
 
   /**
    * Implements ContainerFactoryPluginInterface->create().
@@ -103,7 +119,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       $plugin_id,
       $plugin_definition,
       $container->get('tripal.logger'),
-      $container->get('tripal_chado.database')
+      $container->get('tripal_chado.database'),
+      $container->get('config.factory')
     );
   }
 
@@ -121,11 +138,12 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * @param Drupal\tripal\Services\TripalLogger $logger
    * @param Drupal\tripal_chado\Database\ChadoConnection $connection
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, TripalLogger $logger, ChadoConnection $connection) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, TripalLogger $logger, ChadoConnection $connection, ConfigFactoryInterface $config_factory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->logger = $logger;
     $this->connection = $connection;
+    $this->config_factory = $config_factory;
   }
 
   /**
@@ -140,8 +158,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     * {@inheritdoc}
     */
   public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []) {
-    
-    // Check if the mode is one of the 3 options, throw an exception otherwise 
+
+    // Check if the mode is one of the 3 options, throw an exception otherwise
     $valid_modes = [0, 1, 2];
 
     if (!in_array($mode, $valid_modes)) {
@@ -206,7 +224,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       // If the primary key is available then the insert worked and we can return it.
       if ($result) {
         return $result;
-      } 
+      }
       else { // Otherwise, something went wrong so tell the user
         throw new \Exception(
           t("Tried to insert '@record_type' but the primary key is returned empty (mode=@mode). Values: " .print_r($select_values, TRUE), ['@record_type'=>$record_type, '@mode'=>$mode])
@@ -224,6 +242,159 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function processSamples() {
+
+    // Grab config from our settings.yml
+    $genetics_config = $this->config_factory->get('trpcultivate_genetics.settings');
+    $genotypes_config = $this->config_factory->get('trpcultivate_genotypes.settings');
+    $sample_file = $this->getSampleFilepath();
+    // Open the sample mapping file
+    $SAMPLES_FILE = fopen($sample_file, 'r');
+
+    // Grab the header - not doing anything with it at this time
+    $header = fgetcsv($SAMPLES_FILE, 0, "\t");
+
+    // Iterate through each row to grab all of the samples
+    while(!feof($SAMPLES_FILE)) {
+      $current_line = fgetcsv($SAMPLES_FILE, 0, "\t");
+      if (empty($current_line)) continue;
+      // Check the number of columns in our row
+      $num_columns = count($current_line);
+      if ($num_columns < 5) {
+        throw new \Exception(
+          t("A minimum of 5 columns are required (@columns detected) in the samples file: @file", ['@file'=>$sample_file, '@columns'=>$num_columns])
+        );
+      } else if ($num_columns > 7) {
+        // We don't need to throw an exception here, but let's warn the user in case
+        // the extra columns were unintentional
+        $this->logger->notice("Detected more than 7 columns in the samples file. Extra columns will be ignored.");
+      }
+
+      // Collect our default germplasm type and organism. If we have this information
+      // in the samples file, then these variables will get overwritten
+      $germplasm_type_id = $genetics_config->get('terms.germplasm_type');
+      $organism_id = $this->getOrganismID();
+
+      // Column 1: DNA source (name should match sample in the genotype input file)
+      $source_name = array_shift($current_line);
+      // Column 2: Name of the sample assayed
+      $sample_name = array_shift($current_line);
+      // Column 3: Accession of the sample assayed
+      $sample_accession = array_shift($current_line);
+      // Column 4: Name of the germplasm
+      $germplasm_name = array_shift($current_line);
+      // Column 5: Accession of the germplasm
+      $germplasm_accession = array_shift($current_line);
+      // Column 6: User can optionally supply a stock_type for each germplasm if they are inserting
+      if ($num_columns >= 6) {
+        $germplasm_type = array_shift($current_line);
+        if (!empty($germplasm_type)) {
+          // Break our germplasm type into its dbname and accession
+          list($germplasm_type_dbname, $germplasm_type_accession) = explode(':', $germplasm_type);
+          $query = $this->connection->select('1:cvterm', 'cvt')
+            ->fields('cvt', ['cvterm_id']);
+          // Joins cannot be chained
+          $query->join('1:dbxref', 'dbx', 'dbx.dbxref_id = cvt.dbxref_id');
+          $query->join('1:db', 'db', 'dbx.db_id = db.db_id');
+          $query->condition('db.name', $germplasm_type_dbname)
+            ->condition('dbx.accession', $germplasm_type_accession);
+          $records = $query->execute()->fetchAll();
+          // Check there is exactly 1 record, otherwise throw an exception
+          if(!$records) {
+            throw new \Exception(
+              t("No cvterm exists for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
+            );
+            return FALSE;
+          }
+          if(sizeof($records) > 1) {
+            throw new \Exception(
+              t("Multiple records exist for the provided germplasm type: @germ_type",['@germ_type' => $germplasm_type])
+            );
+            return FALSE;
+          }
+          $germplasm_type_id = $records[0]->cvterm_id;
+        }
+      }
+      // Column 7: User can optionally supply an organism for each germplasm if
+      // they are inserting germplasm into the database. We need to allow spaces
+      // between the genus and species as well as infraspecific organisms, so we'll
+      // use a method from Tripal's API to look it up in the database
+      if ($num_columns >= 7) {
+        $organism_name = array_shift($current_line);
+        if (!empty($organism_name)) {
+          // Grab the organism ID using the organism name and genus supplied in the samples file
+          $organism_array = chado_get_organism_id_from_scientific_name($organism_name);
+          //print_r($organism_array);
+          if (!$organism_array) {
+            throw new \Exception(
+              t("ERROR: Could not find an organism \"@organism_name\" in the database.", ['@organism_name' => $organism_name])
+            );
+          }
+          // We also want to check if we were given only one value back, as there is
+          // potential to retrieve multiple IDs using that function
+          if (is_array($organism_array) && (count($organism_array) > 1)) {
+            throw new \Exception(
+              t("ERROR: Retrieved more than one organism ID for \"@organism_name\" when only 1 was expected.", ['@organism_name' => $organism_name])
+            );
+          }
+          $organism_id = $organism_array[0];
+        }
+      }
+
+      /** --------------------------
+      *    LOOKUP/INSERT SAMPLES
+      * ----------------------------
+      * Samples in the samples file get checked for or inserted regardless if they
+      * appear in the input file containing genotypic calls. This could be useful if
+      * whoever is managing the database wants to use a single master file containing
+      * all the samples in their database. It also means some samples may be inserted
+      * but no additional data is inserted for those samples by this loader.
+      */
+
+      // ---------- STOCK ----------
+      $samples_mode = $genotypes_config->get('modes.samples_mode');
+      $sample_type_id = $genetics_config->get('terms.sample_type');
+      $stock_id = $this->getRecordPkey('Sample', 'stock', $samples_mode, [
+        'uniquename' => $sample_accession,
+        'organism_id' => $organism_id,
+        'type_id' => $sample_type_id
+      ], [
+        'name' => $sample_name
+      ]);
+      // Reminder: getRecordPkey() will throw an exception if !$stock_id
+
+      // -------- GERMPLASM --------
+      $germplasm_mode = $genotypes_config->get('modes.germplasm_mode');
+      $germplasm_id = $this->getRecordPkey('Germplasm', 'stock', $germplasm_mode, [
+        'uniquename' => $germplasm_accession,
+        'organism_id' => $organism_id,
+        'type_id' => $germplasm_type_id
+      ], [
+        'name' => $germplasm_name
+      ]);
+      // Reminder: getRecordPkey() will throw an exception if !$germplasm_id
+
+      // ----- GERMPLASM TO SAMPLE LINK -----
+      $sample_germplasm_relationship_type_id = $genetics_config->get('terms.sample_germplasm_relationship_type');
+      $status = $this->getRecordPkey('Germplasm to Sample Link', 'stock_relationship', '2', [
+        'subject_id' => $stock_id,
+        'type_id' => $sample_germplasm_relationship_type_id,
+        'object_id' => $germplasm_id,
+      ]);
+      // Reminder: getRecordPkey() will throw an exception if !$status
+
+      // Save the sample source name (which will match the sample name given in the
+      // genotypes input file) and its stock id in the samples array
+      $samples[$source_name] = $stock_id;
+    }
+
+    // Return our samples array
+    return $samples;
+  }
+
   /****************************************************************************
    *  Setter functions
    ****************************************************************************/
@@ -232,7 +403,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * {@inheritdoc}
    */
   public function setOrganismID( int $organism_id ) {
-    
+
     // Do validation - throw exception if not valid
     // Query the provided organism ID
     $result = $this->getRecordPkey("Organism", "organism", 0, ['organism_id' => $organism_id]);
@@ -251,7 +422,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * {@inheritdoc}
    */
   public function setProjectID( int $project_id ) {
-    
+
     // Do validation - throw exception if not valid
     // Query the provided project ID
     $result = $this->getRecordPkey("Project", "project", 0, ['project_id' => $project_id]);
@@ -270,7 +441,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * {@inheritdoc}
    */
   public function setVariantSubTypeID( int $cvterm_id ) {
-    
+
     // Do validation - throw exception if not valid
     // Query the provided cvterm ID
     $result = $this->getRecordPkey("Variant subtype cvterm", "cvterm", 0, ['cvterm_id' => $cvterm_id]);
@@ -289,7 +460,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * {@inheritdoc}
    */
   public function setMarkerSubTypeID( int $cvterm_id ) {
-    
+
     // Do validation - throw exception if not valid
     // Query the provided cvterm ID
     $result = $this->getRecordPkey("Marker subtype cvterm", "cvterm", 0, ['cvterm_id' => $cvterm_id]);
@@ -312,8 +483,8 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     // Do validation - throw exception if not valid
     // Check if the file type is set to one of vcf, matrix or legacy
     $valid_file_types = array(
-      "vcf", 
-      "matrix", 
+      "vcf",
+      "matrix",
       "legacy"
     );
     if(!in_array($file_type, $valid_file_types)) {
@@ -331,10 +502,10 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * {@inheritdoc}
    */
   public function setInputFilepath( string $input_file ) {
-    
+
     // Do validation - throw exception if not valid
-    // Check if file exists
-    if(!file_exists($input_file)) {
+    // Check if file exists and is a file (NOT a directory)
+    if(!(is_file($input_file) && file_exists($input_file))) {
       throw new \Exception(
         t("The input file must already exist but a filepath of @file was provided." , ['@file'=>$input_file])
       );
@@ -356,10 +527,10 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * {@inheritdoc}
    */
   public function setSampleFilepath( string $sample_file ) {
-    
+
     // Do validation - throw exception if not valid
-    // Check if file exists
-    if(!file_exists($sample_file)) {
+    // Check if file exists and is a file (NOT a directory)
+    if(!(is_file($sample_file) && file_exists($sample_file))) {
       throw new \Exception(
         t("The samples file must already exist but a filepath of @file was provided." , ['@file'=>$sample_file])
       );
@@ -382,49 +553,49 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getOrganismID() {
     return $this->organism_id;
   }
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getProjectID() {
     return $this->project_id;
   }
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getVariantSubTypeID() {
     return $this->variant_subtype_id;
   }
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getMarkerSubTypeID() {
     return $this->marker_subtype_id;
   }
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getInputFileType() {
     return $this->file_type;
   }
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getInputFilepath() {
     return $this->input_file;
   }
 
   /**
    * {@inheritdoc}
-   */ 
+   */
   public function getSampleFilepath() {
     return $this->sample_file;
   }

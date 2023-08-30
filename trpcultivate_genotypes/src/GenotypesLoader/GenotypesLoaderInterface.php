@@ -49,6 +49,15 @@ interface GenotypesLoaderInterface {
    */
   public function getRecordPkey(string $record_type, string $table, int $mode, array $select_values, array $insert_values = []);
 
+  /**
+   * This method takes the user-provided samples file and processes it by
+   * performing a lookup for stock_ids and inserting germplasm if allowed.
+   * 
+   * @return array $samples
+   *   An array mapping of [sample_source_name] => [stock_id]
+   */
+  public function processSamples();
+
   /****************************************************************************
    *  Setter functions
    ****************************************************************************/
