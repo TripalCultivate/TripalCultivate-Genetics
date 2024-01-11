@@ -6,13 +6,13 @@
 
 <!-- Summarize the main features of this package in point form below. -->
 
-- Genetic maps, markers, sequence variants and QTL
-- Large-scale genotypic datasets with both
+- Provides import and visualization support for genetic maps, markers, sequence variants and QTL
+- Large-scale genotypic datasets are supported with both:
 
-    - the power of a relational database for tight integration with germplasm, phenotypic data and cross data type tools
+    - the power of a relational database for tight integration with germplasm, phenotypic data and with tools across multiple data types
     - the speed/ease of flat file storage and querying via the Variant Call Format (VCF)
 
-- Genotype Matrix tool for quick visual querying of genotypic differences between germplasm in smaller regions (e.g. QTL or GWAS peak)
+- A Genotype Matrix tool for quick visual querying of genotypic differences between germplasm in smaller regions (e.g. QTL or GWAS peak)
 - Management of metadata for VCF files including a form for researchers to filter and download the results in multiple formats.
 
 ## Citation
