@@ -18,4 +18,4 @@ jobs:
           dockerfile: 'Dockerfile'
           php-version: '8.2'
           pgsql-version: '16'
-          drupal-version: '10.0.x-dev'
+          drupal-version: '10.2.x-dev'

@@ -1,17 +1,11 @@
-ARG drupalversion='10.0.x-dev'
-FROM tripalproject/tripaldocker:drupal${drupalversion}-php8.1-pgsql13-noChado
+ARG drupalversion='10.2.x-dev'
+ARG phpversion='8.3'
+ARG pgsqlversion='16'
+FROM knowpulse/tripalcultivate:baseonly-drupal${drupalversion}-php${phpversion}-pgsql${pgsqlversion}
 
-ARG chadoschema='testchado'
 COPY . /var/www/drupal/web/modules/contrib/TripalCultivate-Genetics
-
 WORKDIR /var/www/drupal/web/modules/contrib/TripalCultivate-Genetics
 
 RUN service postgresql restart \
-  && drush trp-install-chado --schema-name=${chadoschema} \
-  && drush trp-prep-chado --schema-name=${chadoschema} \
-  && drush tripal:trp-import-types --username=drupaladmin --collection_id=general_chado \
-  && drush tripal:trp-import-types --username=drupaladmin --collection_id=germplasm_chado \
-  && drush tripal:trp-import-types --username=drupaladmin --collection_id=genomic_chado \
-  && drush tripal:trp-import-types --username=drupaladmin --collection_id=genetic_chado \
   && drush en trpcultivate_genetics trpcultivate_genotypes trpcultivate_genomatrix trpcultivate_qtl trpcultivate_vcf --yes \
   && drush cr
