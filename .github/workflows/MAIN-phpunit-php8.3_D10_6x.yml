@@ -1,0 +1,31 @@
+
+name: 'PHPUnit'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 4.x
+  schedule:
+    - cron: '0 2 * * *'
+
+permissions: read-all
+
+
+jobs:
+  running-tests:
+    name: 'PHP 8.3 - Drupal 10.6.x-dev - PostgreSQL 18'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Checkout Repository'
+        uses: 'actions/checkout@v6'
+      - name: 'Run Automated testing'
+        uses: 'tripal/test-tripal-action@v1.8'
+        with:
+          directory-name: 'trpcultivate_genetics'
+          modules: 'trpcultivate_genetics, trpcultivate_genomatrix, trpcultivate_genotypes, trpcultivate_qtl, trpcultivate_vcf'
+          php-version: '8.3'
+          drupal-version: '10.6.x-dev'
+          pgsql-version: '18'
+          build-image: TRUE
+          dockerfile: 'Dockerfile'
