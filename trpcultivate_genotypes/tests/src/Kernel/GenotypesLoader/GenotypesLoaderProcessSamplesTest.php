@@ -7,6 +7,7 @@ use Drupal\Tests\tripal_chado\Kernel\ChadoTestKernelBase;
 use Drupal\Tests\trpcultivate_genotypes\Functional\GenotypesLoader\Subclass\GenotypesLoaderFakePlugin;
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginBase;
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * A test to call the the processSamples() method in the plugin base for the genotypes loader.
@@ -14,6 +15,7 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
  * @group TripGeno Genetics
  * @group Genotypes Loader
  */
+#[RunTestsInSeparateProcesses]
 class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 
   /**
@@ -432,7 +434,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 			->condition('stock_id', 4, '=');
 		$Prado_germ_record = $Prado_germ_query->execute()->fetchAll();
 		$this->assertEquals($Prado_germ_record[0]->type_id, 10, "The germplasm being inserted has an unexpected type_id.");
-		
+
 		// Pull out germplasm type for a sample where it was specified in the samples file
 		$germplasm_type_id = $this->getCVtermID('CO_010','0000044');
 		$Ash_germ_query = $this->connection->select('1:stock','s')

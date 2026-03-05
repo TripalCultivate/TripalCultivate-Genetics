@@ -4,6 +4,7 @@ namespace Drupal\Tests\trpcultivate_vcf\Functional;
 
 use Drupal\Core\Url;
 use Drupal\Tests\tripal_chado\Functional\ChadoTestBrowserBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Simple test to ensure that main page loads with module enabled.
@@ -11,6 +12,7 @@ use Drupal\Tests\tripal_chado\Functional\ChadoTestBrowserBase;
  * @group TripGeno Genetics
  * @group Installation
  */
+#[RunTestsInSeparateProcesses]
 class InstallTest extends ChadoTestBrowserBase {
 
   protected $defaultTheme = 'stark';
