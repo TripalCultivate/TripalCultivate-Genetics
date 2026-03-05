@@ -6,15 +6,15 @@ use Drupal\Component\Plugin\Attribute\Plugin;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
- * Defines a data validator attribute object.
+ * Defines a genotypes loader attribute object.
  *
- * Plugin Namespace: Drupal\trpcultivate\TripalCultivateValidator.
+ * Plugin Namespace: Drupal\trpcultivate_genotypes\GenotypesLoader.
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class GenotypesLoader extends Plugin {
 
   /**
-   * Constructs a TripalCultivateValidator attribute.
+   * Constructs a GenotypesLoader attribute.
    *
    * @param string $id
    *   The plugin ID.
