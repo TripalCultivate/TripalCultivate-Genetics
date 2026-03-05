@@ -71,7 +71,7 @@ class InstallTest extends ChadoTestBrowserBase {
   public function testHelp() {
     $session = $this->getSession();
 
-    $some_extected_text = self::$help_text_excerpt;
+    $some_expected_text = self::$help_text_excerpt;
 
     // Ensure we have an admin user.
     $user = $this->drupalCreateUser(['access administration pages', 'administer modules', 'access help pages']);
@@ -85,7 +85,7 @@ class InstallTest extends ChadoTestBrowserBase {
     $hook_name = self::$module_machinename . '_help';
     $output = $hook_name($name, $match);
     $this->assertNotEmpty($output, "The help hook should return output $context.");
-    $this->assertStringContainsString($some_extected_text, $output);
+    $this->assertStringContainsString($some_expected_text, $output);
 
     // Help Page.
     $this->drupalGet('admin/help');
@@ -95,7 +95,7 @@ class InstallTest extends ChadoTestBrowserBase {
     $this->drupalGet('admin/help/' . self::$module_machinename);
     $status_code = $session->getStatusCode();
     $this->assertEquals(200, $status_code, "The module help page should be able to load $context.");
-    $this->assertSession()->pageTextContains($some_extected_text);
+    $this->assertSession()->pageTextContains($some_expected_text);
   }
 
 }
