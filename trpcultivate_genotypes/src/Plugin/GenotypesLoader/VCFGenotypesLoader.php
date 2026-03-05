@@ -17,9 +17,4 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
   input_file_type: "vcf"
 )]
 class VCFGenotypesLoader extends GenotypesLoaderPluginBase implements GenotypesLoaderInterface {
-
-  /**
-   *
-   */
-
 }

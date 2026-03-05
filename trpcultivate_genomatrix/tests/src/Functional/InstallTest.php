@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\trpcultivate_genomatrix\Functional;
 
+use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Url;
 use Drupal\Tests\tripal_chado\Functional\ChadoTestBrowserBase;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -15,6 +16,11 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 #[RunTestsInSeparateProcesses]
 class InstallTest extends ChadoTestBrowserBase {
 
+  /**
+   * The default theme to use for this test.
+   *
+   * @var string
+   */
   protected $defaultTheme = 'stark';
 
   /**
@@ -25,18 +31,23 @@ class InstallTest extends ChadoTestBrowserBase {
   protected static $modules = ['help', 'trpcultivate_genomatrix'];
 
   /**
-   * The name of your module in the .info.yml
+   * The name of your module in the .info.yml.
+   *
+   * @var string
    */
   protected static $module_name = 'Genotype Matrix';
 
   /**
    * The machine name of this module.
+   *
+   * @var string
    */
   protected static $module_machinename = 'trpcultivate_genomatrix';
 
   /**
-   * A small excert from your help page.
-   * Do not cross newlines.
+   * A small excert from your help page. Do not cross newlines.
+   *
+   * @var string
    */
   protected static $help_text_excerpt = 'for quick visual querying of genotypic differences in sm';
 
@@ -61,7 +72,7 @@ class InstallTest extends ChadoTestBrowserBase {
     $this->drupalGet('admin/modules');
     $status_code = $session->getStatusCode();
     $this->assertEquals(200, $status_code, "The module install page should be able to load $context.");
-    $this->assertSession()->pageTextContains( self::$module_name );
+    $this->assertSession()->pageTextContains(self::$module_name);
 
   }
 
@@ -81,7 +92,7 @@ class InstallTest extends ChadoTestBrowserBase {
 
     // Call the hook to ensure it is returning text.
     $name = 'help.page.' . $this::$module_machinename;
-    $match = $this->createStub(\Drupal\Core\Routing\RouteMatch::class);
+    $match = $this->createStub(RouteMatch::class);
     $hook_name = self::$module_machinename . '_help';
     $output = $hook_name($name, $match);
     $this->assertNotEmpty($output, "The help hook should return output $context.");
