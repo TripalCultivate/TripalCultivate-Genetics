@@ -1,17 +1,12 @@
-
-name: PHPUnit Matrixed
+name: PHPUnit Full Test Suite
 on:
   push:
     branches-ignore:
       - 4.x
+      - g0.37-drupalCompatibility
   # Allows us to manually trigger this workflow.
   # This is great if there is a change made to Tripal core that we want to test our modules on ASAP.
   workflow_dispatch:
-  # Allows us to schedule when this workflow is run.
-  # This ensures we pick up any new changes committed to Tripal Core.
-  schedule:
-    # Run at 2am every night.
-    - cron: '0 2 * * *'
 
 env:
   PKG_NAME: TripalCultivate-Genetics
@@ -19,6 +14,7 @@ env:
 
 jobs:
   run-tests:
+    name: "Drupal ${{ matrix.drupal-version }} - PHP ${{ matrix.php-version }} - PostgreSQL ${{ matrix.pgsql-version }}"
     runs-on: ubuntu-latest
 
     strategy:
@@ -38,11 +34,6 @@ jobs:
           - "11.2.x-dev"
           - "11.3.x-dev"
         exclude:
-          # Only Drupal 11.x supports PHP 8.4
-          - php-version: '8.4'
-            drupal-version: '10.5.x-dev'
-          - php-version: '8.4'
-            drupal-version: '10.6.x-dev'
           # Only Drupal 11.3+ supports PHP 8.5.
           - php-version: "8.5"
             drupal-version: "10.5.x-dev"
@@ -57,12 +48,13 @@ jobs:
             drupal-version: "11.3.x-dev"
           # Exclude higher postgresql version from middle Drupal versions
           - pgsql-version: "18"
-            drupal-version: "10.5.x-dev"
+            drupal-version: "10.6.x-dev"
           # Drupal 11+ requires at least php 8.3.
           - php-version: "8.2"
             drupal-version: "11.2.x-dev"
           - php-version: "8.2"
             drupal-version: "11.3.x-dev"
+
     steps:
       # Check out the repo
       - name: Checkout Repository
