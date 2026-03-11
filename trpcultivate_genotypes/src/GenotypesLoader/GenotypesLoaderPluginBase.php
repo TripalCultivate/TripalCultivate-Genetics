@@ -255,11 +255,11 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
     $SAMPLES_FILE = fopen($sample_file, 'r');
 
     // Grab the header - not doing anything with it at this time
-    $header = fgetcsv($SAMPLES_FILE, 0, "\t");
+    $header = fgetcsv($SAMPLES_FILE, 0, "\t", escape: "");
 
     // Iterate through each row to grab all of the samples
     while(!feof($SAMPLES_FILE)) {
-      $current_line = fgetcsv($SAMPLES_FILE, 0, "\t");
+      $current_line = fgetcsv($SAMPLES_FILE, 0, "\t", escape: "");
       if (empty($current_line)) continue;
       // Check the number of columns in our row
       $num_columns = count($current_line);

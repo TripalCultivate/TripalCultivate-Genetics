@@ -38,7 +38,7 @@ class GenotypesLoader extends Plugin {
 
   /**
    * The file type of the input file.
-   * 
+   *
    * @var string
    */
   public $input_file_type;
