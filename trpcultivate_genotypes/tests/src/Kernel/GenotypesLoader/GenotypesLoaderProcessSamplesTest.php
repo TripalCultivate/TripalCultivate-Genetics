@@ -8,6 +8,7 @@ use Drupal\Tests\trpcultivate_genotypes\Functional\GenotypesLoader\Subclass\Geno
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginBase;
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * A test to call the the processSamples() method in the plugin base for the genotypes loader.
@@ -15,6 +16,8 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group TripGeno Genetics
  * @group Genotypes Loader
  */
+#[Group('TripGeno Genetics')]
+#[Group('Genotypes Loader')]
 #[RunTestsInSeparateProcesses]
 class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 

@@ -8,6 +8,7 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginManager;
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
 use Drupal\trpcultivate_genotypes\Plugin\GenotypesLoader\VCFGenotypesLoader;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * A test to call the methods in the plugin base for the genotypes loader.
@@ -15,6 +16,8 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group TripGeno Genetics
  * @group Genotypes Loader
  */
+#[Group('TripGeno Genetics')]
+#[Group('Genotypes Loader')]
 #[RunTestsInSeparateProcesses]
 class GenotypesLoaderPluginManagerTest extends ChadoTestBrowserBase {
 
