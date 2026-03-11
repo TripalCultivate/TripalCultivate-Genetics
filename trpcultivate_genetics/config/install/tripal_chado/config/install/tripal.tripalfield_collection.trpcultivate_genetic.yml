@@ -47,8 +47,8 @@ fields:
                 base_column: identifier
             max_length: 255
         settings:
-            termIdSpace: schema
-            termAccession: identifier
+            termIdSpace: data
+            termAccession: '0842'
         display:
           view:
             default:
@@ -233,7 +233,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                linker_table: featuremap_author
+                linker_table: featuremap_contact
                 linker_fkey_column: contact_id
         settings:
             termIdSpace: NCIT
@@ -287,7 +287,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                linker_table: featuremap_stock
+                linker_table: stock_featuremap
                 linker_fkey_column: stock_id
         settings:
             termIdSpace: 'EFO'
@@ -397,8 +397,8 @@ fields:
                 linker_table: featuremap_analysis
                 linker_fkey_column: pub_id
         settings:
-            termIdSpace: TPUB
-            termAccession: "0000002"
+            termIdSpace: operation
+            termAccession: "2945"
         display:
           view:
             default:

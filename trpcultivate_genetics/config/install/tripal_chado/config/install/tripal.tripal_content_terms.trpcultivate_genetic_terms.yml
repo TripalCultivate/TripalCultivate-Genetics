@@ -1,0 +1,15 @@
+id: 'trpcultivate_genetic_terms'
+label: 'TripalCultivate Genetic Terms'
+description: 'Default terms used by the TripalCultivate Genetic collection of modules.'
+vocabularies:
+    -   name: 'local'
+        label: 'Locally created terms'
+        url: 'cv/lookup/local'
+        idSpaces:
+            -   name: 'local'
+                description: 'Terms created for this site'
+                urlPrefix: 'cv/lookup/{db}/{accession}'
+        terms:
+            - id: 'local:population_name'
+              name: 'Population Name'
+              description: 'The name of the population used to generate the map.'
