@@ -7,6 +7,8 @@ use Drupal\Tests\tripal_chado\Functional\ChadoTestBrowserBase;
 use Drupal\Tests\trpcultivate_genotypes\Functional\GenotypesLoader\Subclass\GenotypesLoaderFakePlugin;
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderPluginBase;
 use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * A test to call the methods in the plugin base for the genotypes loader.
@@ -14,6 +16,9 @@ use Drupal\trpcultivate_genotypes\GenotypesLoader\GenotypesLoaderInterface;
  * @group TripGeno Genetics
  * @group Genotypes Loader
  */
+#[Group('TripGeno Genetics')]
+#[Group('Genotypes Loader')]
+#[RunTestsInSeparateProcesses]
 class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
 
   protected $defaultTheme = 'stark';
@@ -177,7 +182,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
         'species' => $species
       ]);
     }
-    catch ( \Exception $e ) { 
+    catch ( \Exception $e ) {
       $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for using an invalid mode (5).");
@@ -189,8 +194,8 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
         'genus' => $genus,
         'species' => $species
       ]);
-    } 
-    catch ( \Exception $e ) { 
+    }
+    catch ( \Exception $e ) {
       $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for trying to insert a duplicate.");
@@ -210,7 +215,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
         'species' => $species
       ]);
     }
-    catch ( \Exception $e ) { 
+    catch ( \Exception $e ) {
       $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for attempting to select/insert a record that was already duplicated.");
@@ -224,12 +229,12 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
         'blah' => "blah"
       ]);
     }
-    catch ( \Exception $e ) { 
+    catch ( \Exception $e ) {
       $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for inserting a record with an invalid field.");
 
-    // Test if we can select a record that does not exist, and catch the exception 
+    // Test if we can select a record that does not exist, and catch the exception
     $exception_caught = FALSE;
     try {
       $plugin->getRecordPkey('Organism', 'organism', 0, [
@@ -237,7 +242,7 @@ class GenotypesLoaderBasePluginTest extends ChadoTestBrowserBase {
         'species' => "silvestris"
       ]);
     }
-    catch ( \Exception $e ) { 
+    catch ( \Exception $e ) {
       $exception_caught = TRUE;
     }
     $this->assertTrue($exception_caught, "Did not catch exception for selecting a non-existing record.");
