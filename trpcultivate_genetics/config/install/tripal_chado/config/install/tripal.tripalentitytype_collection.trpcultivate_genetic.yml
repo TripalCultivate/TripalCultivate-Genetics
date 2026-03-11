@@ -1,0 +1,18 @@
+id: 'trpcultivate_genetic'
+label: 'Tripal Cultivate: Genetic Content Types (Chado)'
+description: 'Content types based on Chado focused on supporting genetic data such as sequence variation, genetic markers and maps.'
+content_types:
+
+    -   label: Genetic Map
+        term: data:1278
+        help_text: Use a genetic map page for a map showing the relative positions of genetic markers in a nucleic acid sequence, based on estimation of non-physical distance such as recombination frequencies.
+        category: Genetic
+        id: genetic_map
+        title_format: "[genetic_map_name]"
+        url_format: "genetic_map/[TripalEntity__entity_id]"
+        synonyms:
+            - bio_data_16
+        settings:
+            chado_base_table: featuremap
+            bundle_type_table: featuremapprop
+            bundle_type_column: type_id

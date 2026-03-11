@@ -1,0 +1,411 @@
+id: 'trpcultivate_genetic_chado'
+label: 'Tripal Cultivate: Chado Fields for Genetic Content Types'
+description: 'Fields focused on covering the columns of the Chado tables associated with the Genetic content types.'
+fields:
+
+## Genetic Map ##
+
+    -   name: genetic_map_type
+        content_type: genetic_map
+        label: Type
+        type: chado_additional_type_type_default
+        description: An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in.
+        cardinality: 1
+        required: true
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                type_table: featuremapprop
+                type_column: type_id
+        settings:
+            termIdSpace: "data"
+            termAccession: "1278"
+            fixed_value: "data:1278"
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_identifier
+        content_type: genetic_map
+        label: Identifier
+        type: chado_string_type_default
+        description: This should follow the format YEAR-AUTHOR-POPULATION where the author should be the initials. For example, a map generated in 2019 by TA Haile on LR-01 would have an identifier of 2019-TAH-LR-01.
+        cardinality: 1
+        required: true
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: identifier
+            max_length: 255
+        settings:
+            termIdSpace: schema
+            termAccession: identifier
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_name
+        content_type: genetic_map
+        label: Name
+        type: chado_string_type_default
+        description: The name of the item.
+        cardinality: 1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: name
+            max_length: 255
+        settings:
+            termIdSpace: schema
+            termAccession: name
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_population_name
+        content_type: genetic_map
+        label: Population Name
+        type: chado_string_type_default
+        description: The name of the population used to generate the map. This should match the name of the population in the population if there is a discrepancy between that value and KnowPulse.
+        cardinality: 1
+        required: true
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: population_name
+            max_length: 255
+        settings:
+            termIdSpace: local
+            termAccession: population_name
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_year_published
+        content_type: genetic_map
+        label: Year Published
+        type: chado_integer_type_default
+        description: The year this Genetic Map was published or made available.
+        cardinality: 1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: year_published
+            max_length: 255
+        settings:
+            termIdSpace: local
+            termAccession: year_published
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_population_type
+        content_type: genetic_map
+        label: Population Type
+        type: chado_string_type_default
+        description: The type of population used to generate a map (e.g. F2, BC1, RIL, ABC).
+        cardinality: 1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: population_type
+            max_length: 255
+        settings:
+            termIdSpace: local
+            termAccession: population_type
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_population_size
+        content_type: genetic_map
+        label: Population Type
+        type: chado_integer_type_default
+        description: The number of individuls in the population used to generate the map.
+        cardinality: 1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: population_size
+            max_length: 255
+        settings:
+            termIdSpace: local
+            termAccession: population_size
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_unit_type
+        content_type: genetic_map
+        label: Unit Type
+        type: chado_unit_type_default
+        description: A unit of measurement is a standardized quantity of a physical quality.
+        cardinality: 1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                type_table: featuremap
+                type_column: unittype_id
+        settings:
+            termIdSpace: UO
+            termAccession: "0000000"
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 10
+          form:
+            default:
+              region: content
+              weight: 10
+
+    -   name: genetic_map_author
+        content_type: genetic_map
+        label: Author
+        type: chado_contact_type_default
+        description: The primary author of this genetic map.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                linker_table: featuremap_author
+                linker_fkey_column: contact_id
+        settings:
+            termIdSpace: NCIT
+            termAccession: C47954
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 30
+          form:
+            default:
+              region: content
+              weight: 30
+
+    -   name: genetic_map_organism
+        content_type: genetic_map
+        label: Organism
+        type: chado_organism_type_default
+        description: A material entity that is an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment. An organism may be unicellular or made up, like humans, of many billions of cells divided into specialized tissues and organs.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                linker_table: featuremap_organism
+                linker_fkey_column: organism_id
+        settings:
+            termIdSpace: OBI
+            termAccession: '0100026'
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 30
+          form:
+            default:
+              region: content
+              weight: 30
+
+    -   name: genetic_map_stock
+        content_type: genetic_map
+        label: Germplasm
+        type: chado_stock_type_default
+        description: Any material sample taken from a biological entity for testing, diagnostic, propagation, treatment or research purposes, including a sample obtained from a living organism or taken from the biological object after halting of all its life functions.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                linker_table: featuremap_stock
+                linker_fkey_column: stock_id
+        settings:
+            termIdSpace: 'EFO'
+            termAccession: '0007059'
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 30
+          form:
+            default:
+              region: content
+              weight: 30
+
+    -   name: genetic_map_description
+        content_type: genetic_map
+        label: Description
+        type: chado_text_type_default
+        description: A description of the item.
+        cardinality: 1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                base_column: description
+        settings:
+            termIdSpace: schema
+            termAccession: description
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 15
+          form:
+            default:
+              region: content
+              weight: 15
+
+    -   name: genetic_map_pub
+        content_type: genetic_map
+        label: Publication
+        type: chado_pub_type_default
+        description: Associates a publication (e.g. journal article, conference proceedings, book chapter, etc.) with this record.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                linker_table: featuremap_pub
+                linker_fkey_column: pub_id
+        settings:
+            termIdSpace: TPUB
+            termAccession: "0000002"
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 35
+          form:
+            default:
+              region: content
+              weight: 35
+
+    -   name: genetic_map_dbxref_ann
+        content_type: genetic_map
+        label: Database Reference Annotations
+        type: chado_dbxref_type_default
+        description: The IDs where this record may be available in other external online databases.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                linker_table: featuremap_dbxref
+                linker_fkey_column: dbxref_id
+        settings:
+            termIdSpace: SBO
+            termAccession: "0000552"
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 68
+          form:
+            default:
+              region: content
+              weight: 68
+
+    -   name: genetic_map_analysis
+        content_type: genetic_map
+        label: Analysis
+        type: chado_analysis_type_default
+        description: Apply analytical methods to existing data of a specific type.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                linker_table: featuremap_analysis
+                linker_fkey_column: pub_id
+        settings:
+            termIdSpace: TPUB
+            termAccession: "0000002"
+        display:
+          view:
+            default:
+              region: content
+              label: above
+              weight: 35
+          form:
+            default:
+              region: content
+              weight: 35
