@@ -36,7 +36,7 @@ fields:
     -   name: genetic_map_identifier
         content_type: genetic_map
         label: Identifier
-        type: chado_string_type_default
+        type: chado_property_type_default
         description: This should follow the format YEAR-AUTHOR-POPULATION where the author should be the initials. For example, a map generated in 2019 by TA Haile on LR-01 would have an identifier of 2019-TAH-LR-01.
         cardinality: 1
         required: true
@@ -44,7 +44,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                base_column: identifier
+                prop_table: featuremapprop
             max_length: 255
         settings:
             termIdSpace: data
@@ -90,7 +90,7 @@ fields:
     -   name: genetic_map_population_name
         content_type: genetic_map
         label: Population Name
-        type: chado_string_type_default
+        type: chado_property_type_default
         description: The name of the population used to generate the map. This should match the name of the population in the population if there is a discrepancy between that value and KnowPulse.
         cardinality: 1
         required: true
@@ -98,7 +98,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                base_column: population_name
+                prop_table: featuremapprop
             max_length: 255
         settings:
             termIdSpace: local
@@ -117,7 +117,7 @@ fields:
     -   name: genetic_map_year_published
         content_type: genetic_map
         label: Year Published
-        type: chado_integer_type_default
+        type: chado_property_type_default
         description: The year this Genetic Map was published or made available.
         cardinality: 1
         required: false
@@ -125,7 +125,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                base_column: year_published
+                prop_table: featuremapprop
             max_length: 255
         settings:
             termIdSpace: local
@@ -144,7 +144,7 @@ fields:
     -   name: genetic_map_population_type
         content_type: genetic_map
         label: Population Type
-        type: chado_string_type_default
+        type: chado_property_type_default
         description: The type of population used to generate a map (e.g. F2, BC1, RIL, ABC).
         cardinality: 1
         required: false
@@ -152,7 +152,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                base_column: population_type
+                prop_table: featuremapprop
             max_length: 255
         settings:
             termIdSpace: local
@@ -171,7 +171,7 @@ fields:
     -   name: genetic_map_population_size
         content_type: genetic_map
         label: Population Type
-        type: chado_integer_type_default
+        type: chado_property_type_default
         description: The number of individuls in the population used to generate the map.
         cardinality: 1
         required: false
@@ -179,7 +179,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                base_column: population_size
+                prop_table: featuremapprop
             max_length: 255
         settings:
             termIdSpace: local
@@ -303,6 +303,30 @@ fields:
               region: content
               weight: 30
 
+    -   name: genetic_map_dataset
+        content_type: genetic_map
+        label: Dataset
+        type: chado_property_type_default
+        description: Use this field to describe specific datasets that are part of this genetic map.
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                prop_table: featuremapprop
+        settings:
+            termIdSpace: SIO
+            termAccession: '000089'
+        display:
+          view:
+            default:
+              region: content
+              label: hidden
+          form:
+            default:
+              region: content
+
     -   name: genetic_map_description
         content_type: genetic_map
         label: Description
@@ -395,7 +419,7 @@ fields:
             storage_plugin_settings:
                 base_table: featuremap
                 linker_table: featuremap_analysis
-                linker_fkey_column: pub_id
+                linker_fkey_column: analysis_id
         settings:
             termIdSpace: operation
             termAccession: "2945"
