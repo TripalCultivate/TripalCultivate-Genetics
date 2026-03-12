@@ -27,11 +27,9 @@ fields:
             default:
               region: content
               label: above
-              weight: -10
           form:
             default:
               region: content
-              weight: -10
 
     -   name: genetic_map_identifier
         content_type: genetic_map
@@ -79,9 +77,11 @@ fields:
             default:
               region: content
               label: above
+              weight: -28
           form:
             default:
               region: content
+              weight: -28
 
     -   name: genetic_map_population_name
         content_type: genetic_map
@@ -104,9 +104,11 @@ fields:
             default:
               region: content
               label: above
+              weight: -27
           form:
             default:
               region: content
+              weight: -27
 
     -   name: genetic_map_year_published
         content_type: genetic_map
@@ -129,9 +131,11 @@ fields:
             default:
               region: content
               label: above
+              weight: -26
           form:
             default:
               region: content
+              weight: -26
 
     -   name: genetic_map_population_type
         content_type: genetic_map
@@ -211,7 +215,7 @@ fields:
     -   name: genetic_map_author
         content_type: genetic_map
         label: Author
-        type: chado_contact_type_default
+        type: chado_contact_by_role_type_default
         description: The primary author of this genetic map.
         cardinality: -1
         required: true
@@ -222,8 +226,8 @@ fields:
                 linker_table: featuremap_contact
                 linker_fkey_column: contact_id
         settings:
-            termIdSpace: NCIT
-            termAccession: C47954
+            termIdSpace: local
+            termAccession: contact
         display:
           view:
             default:
@@ -327,11 +331,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 70
           form:
             default:
               region: content
-              weight: 70
 
     -   name: genetic_map_pub
         content_type: genetic_map
@@ -354,11 +356,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 80
           form:
             default:
               region: content
-              weight: 80
 
     -   name: genetic_map_dbxref_ann
         content_type: genetic_map
@@ -381,16 +381,14 @@ fields:
             default:
               region: content
               label: above
-              weight: 90
           form:
             default:
               region: content
-              weight: 90
 
     -   name: genetic_map_analysis
         content_type: genetic_map
         label: Analysis
-        type: chado_property_type_default
+        type: chado_analysis_type_default
         description: Apply analytical methods to existing data of a specific type.
         cardinality: -1
         required: false
@@ -407,8 +405,6 @@ fields:
             default:
               region: content
               label: above
-              weight: 100
           form:
             default:
               region: content
-              weight: 100

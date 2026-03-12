@@ -9,7 +9,7 @@ layouts:
       - id: genetic-map-section-core
         type: details
         label: "Metadata"
-        weight: 2
+        weight: -30
         show_empty: false
         open: true
         children:
@@ -25,7 +25,7 @@ layouts:
           - genetic_map_stock
       - id: genetic-map-section-dataset
         label: "Dataset"
-        weight: 3
+        weight: -20
         type: details
         open: true
         children:
