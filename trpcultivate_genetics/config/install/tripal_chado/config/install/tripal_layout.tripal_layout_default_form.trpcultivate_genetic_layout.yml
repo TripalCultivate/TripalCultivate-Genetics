@@ -1,0 +1,20 @@
+id: 'trpcultivate_genetic_layout'
+label: 'Genetic Map'
+description: 'Display for the genetic map content type.'
+layouts:
+  - tripal_entity_type: genetic_map
+    field_groups:
+      - id: stages
+        type: tab
+        label: "Stages"
+        weight: 1
+        show_empty: false
+        open: false
+        children:
+          - genetic-section-dataset
+      - id: genetic-section-dataset
+        label: "Dataset"
+        type: details
+        open: true
+        children:
+          - genetic_map_dataset
