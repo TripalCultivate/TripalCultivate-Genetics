@@ -1,0 +1,24 @@
+<?php
+
+function trpcultivate_genetics_install(): void {
+
+  // Submit job to install terms needed by this module.
+  $current_user = \Drupal::currentUser();
+  \Drupal::service('tripal.job')->create([
+    'job_name' => t("Insert terms used by the Tripal Cultivate Genetics package"),
+    'modulename' => 'trpcultivate_genetics',
+    'callback' => 'trpcultivate_genetics_install_terms',
+    'arguments' => [],
+    'uid' => $current_user->id(),
+  ]);
+
+  // Submit job to install content types and fields.
+  $current_user = \Drupal::currentUser();
+  \Drupal::service('tripal.job')->create([
+    'job_name' => t("Import content type collections used by the Tripal Cultivate Genetics package"),
+    'modulename' => 'trpcultivate_genetics',
+    'callback' => 'trpcultivate_genetics_import_contenttypes',
+    'arguments' => [],
+    'uid' => $current_user->id(),
+  ]);
+}
