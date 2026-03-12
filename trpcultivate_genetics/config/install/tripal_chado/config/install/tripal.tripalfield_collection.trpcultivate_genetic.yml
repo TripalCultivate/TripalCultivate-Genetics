@@ -1,5 +1,5 @@
-id: 'trpcultivate_genetic_chado'
-label: 'Tripal Cultivate: Chado Fields for Genetic Content Types'
+id: 'trpcultivate_genetic'
+label: 'Chado Fields for Genetic Content Types'
 description: 'Fields focused on covering the columns of the Chado tables associated with the Genetic content types.'
 fields:
 
