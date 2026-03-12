@@ -27,11 +27,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_identifier
         content_type: genetic_map
@@ -54,11 +52,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_name
         content_type: genetic_map
@@ -81,11 +77,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_population_name
         content_type: genetic_map
@@ -108,11 +102,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_year_published
         content_type: genetic_map
@@ -135,11 +127,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_population_type
         content_type: genetic_map
@@ -162,11 +152,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_population_size
         content_type: genetic_map
@@ -189,11 +177,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_unit_type
         content_type: genetic_map
@@ -216,11 +202,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 10
           form:
             default:
               region: content
-              weight: 10
 
     -   name: genetic_map_author
         content_type: genetic_map
@@ -228,7 +212,7 @@ fields:
         type: chado_contact_type_default
         description: The primary author of this genetic map.
         cardinality: -1
-        required: false
+        required: true
         storage_settings:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
@@ -243,11 +227,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 30
           form:
             default:
               region: content
-              weight: 30
 
     -   name: genetic_map_organism
         content_type: genetic_map
@@ -270,11 +252,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 30
           form:
             default:
               region: content
-              weight: 30
 
     -   name: genetic_map_stock
         content_type: genetic_map
@@ -297,11 +277,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 30
           form:
             default:
               region: content
-              weight: 30
 
     -   name: genetic_map_dataset
         content_type: genetic_map
@@ -347,11 +325,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 15
           form:
             default:
               region: content
-              weight: 15
 
     -   name: genetic_map_pub
         content_type: genetic_map
@@ -374,11 +350,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 35
           form:
             default:
               region: content
-              weight: 35
 
     -   name: genetic_map_dbxref_ann
         content_type: genetic_map
@@ -401,11 +375,9 @@ fields:
             default:
               region: content
               label: above
-              weight: 68
           form:
             default:
               region: content
-              weight: 68
 
     -   name: genetic_map_analysis
         content_type: genetic_map
@@ -428,8 +400,6 @@ fields:
             default:
               region: content
               label: above
-              weight: 35
           form:
             default:
               region: content
-              weight: 35
