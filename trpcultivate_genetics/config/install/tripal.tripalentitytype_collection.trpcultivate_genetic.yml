@@ -1,5 +1,5 @@
 id: 'trpcultivate_genetic'
-label: 'Tripal Cultivate: Genetic Content Types (Chado)'
+label: 'Chado Fields for Genetic Content Types'
 description: 'Content types based on Chado focused on supporting genetic data such as sequence variation, genetic markers and maps.'
 content_types:
 

@@ -10,6 +10,9 @@ vocabularies:
                 description: 'Terms created for this site'
                 urlPrefix: 'cv/lookup/{db}/{accession}'
         terms:
-            - id: 'local:population_name'
+            - id: 'local:Population Name'
               name: 'Population Name'
               description: 'The name of the population used to generate the map.'
+            - id: 'local:year_published'
+              name: 'Year Published'
+              description: 'The year the map was published.'

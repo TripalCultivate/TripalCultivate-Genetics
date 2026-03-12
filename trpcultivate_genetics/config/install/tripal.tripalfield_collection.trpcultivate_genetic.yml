@@ -27,9 +27,11 @@ fields:
             default:
               region: content
               label: above
+              weight: -10
           form:
             default:
               region: content
+              weight: -10
 
     -   name: genetic_map_identifier
         content_type: genetic_map
@@ -96,7 +98,7 @@ fields:
             max_length: 255
         settings:
             termIdSpace: local
-            termAccession: population_name
+            termAccession: Population Name
         display:
           view:
             default:
@@ -146,7 +148,7 @@ fields:
             max_length: 255
         settings:
             termIdSpace: local
-            termAccession: population_type
+            termAccession: Population Type
         display:
           view:
             default:
@@ -158,7 +160,7 @@ fields:
 
     -   name: genetic_map_population_size
         content_type: genetic_map
-        label: Population Type
+        label: Population Size
         type: chado_property_type_default
         description: The number of individuls in the population used to generate the map.
         cardinality: 1
@@ -171,7 +173,7 @@ fields:
             max_length: 255
         settings:
             termIdSpace: local
-            termAccession: population_size
+            termAccession: Population Size
         display:
           view:
             default:
@@ -325,9 +327,11 @@ fields:
             default:
               region: content
               label: above
+              weight: 70
           form:
             default:
               region: content
+              weight: 70
 
     -   name: genetic_map_pub
         content_type: genetic_map
@@ -350,9 +354,11 @@ fields:
             default:
               region: content
               label: above
+              weight: 80
           form:
             default:
               region: content
+              weight: 80
 
     -   name: genetic_map_dbxref_ann
         content_type: genetic_map
@@ -375,14 +381,16 @@ fields:
             default:
               region: content
               label: above
+              weight: 90
           form:
             default:
               region: content
+              weight: 90
 
     -   name: genetic_map_analysis
         content_type: genetic_map
         label: Analysis
-        type: chado_analysis_type_default
+        type: chado_property_type_default
         description: Apply analytical methods to existing data of a specific type.
         cardinality: -1
         required: false
@@ -390,8 +398,7 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                linker_table: featuremap_analysis
-                linker_fkey_column: analysis_id
+                prop_table: featuremapprop
         settings:
             termIdSpace: operation
             termAccession: "2945"
@@ -400,6 +407,8 @@ fields:
             default:
               region: content
               label: above
+              weight: 100
           form:
             default:
               region: content
+              weight: 100
