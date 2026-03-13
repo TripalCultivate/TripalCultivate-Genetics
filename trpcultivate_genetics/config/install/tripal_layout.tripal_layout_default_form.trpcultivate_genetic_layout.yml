@@ -29,4 +29,5 @@ layouts:
         type: details
         open: true
         children:
+          - genetic_map_dataset_file
           - genetic_map_dataset

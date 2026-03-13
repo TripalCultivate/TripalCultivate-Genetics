@@ -124,8 +124,8 @@ fields:
                 prop_table: featuremapprop
             max_length: 255
         settings:
-            termIdSpace: local
-            termAccession: year_published
+            termIdSpace: TPUB
+            termAccession: '0000059'
         display:
           view:
             default:
@@ -276,8 +276,8 @@ fields:
                 linker_table: stock_featuremap
                 linker_fkey_column: stock_id
         settings:
-            termIdSpace: 'EFO'
-            termAccession: '0007059'
+            termIdSpace: 'NCIT'
+            termAccession: 'C70699'
         display:
           view:
             default:
@@ -302,6 +302,30 @@ fields:
         settings:
             termIdSpace: SIO
             termAccession: '000089'
+        display:
+          view:
+            default:
+              region: content
+              label: hidden
+          form:
+            default:
+              region: content
+
+    -   name: genetic_map_dataset_file
+        content_type: genetic_map
+        label: Dataset File
+        type: file
+        description: "Unlimited number of files can be uploaded to this field. 50 MB limit. \nAllowed types: txt tsv csv xlsx xls."
+        cardinality: -1
+        required: false
+        storage_settings:
+            storage_plugin_id: chado_storage
+            storage_plugin_settings:
+                base_table: featuremap
+                prop_table: featuremapprop
+        settings:
+            termIdSpace: TPUB
+            termAccession: '0000053'
         display:
           view:
             default:
