@@ -420,7 +420,8 @@ fields:
             storage_plugin_id: chado_storage
             storage_plugin_settings:
                 base_table: featuremap
-                prop_table: featuremapprop
+                linker_table: featuremap_analysis
+                linker_fkey_column: analysis_id
         settings:
             termIdSpace: operation
             termAccession: "2945"
