@@ -7,7 +7,6 @@ layouts:
       - genetic_map_type
       - genetic_map_name
       - genetic_map_dbxref_ann
-      - 
     field_groups:
       - id: genetic_map_summary
         type: details
