@@ -52,6 +52,13 @@ class SetupModuleService {
   protected TripalEntityTypeCollection $entityTypeCollection;
 
   /**
+   * The Tripal field collection.
+   *
+   * @var Drupal\tripal\Services\TripalFieldCollection
+   */
+  protected TripalFieldCollection $fieldCollection;
+
+  /**
    * Factory method for the service container.
    *
    * @param Symfony\Component\DependencyInjection\ContainerInterface $container
