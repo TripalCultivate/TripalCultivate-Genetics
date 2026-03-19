@@ -7,7 +7,6 @@
 
 use Drupal\Core\Hook\Attribute\LegacyHook;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\tripal_layout\Controller\TripalEntityUILayoutController;
 
 /**
  * Implements hook_help().
@@ -20,4 +19,3 @@ use Drupal\tripal_layout\Controller\TripalEntityUILayoutController;
 function trpcultivate_genetics_help($route_name, RouteMatchInterface $route_match) {
   return \Drupal::service('trpcultivate_genetics.hooks')->help($route_name, $route_match);
 }
-
