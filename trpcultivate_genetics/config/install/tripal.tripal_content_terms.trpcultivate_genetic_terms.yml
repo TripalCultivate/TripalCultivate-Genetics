@@ -13,3 +13,15 @@ vocabularies:
             - id: 'local:Population Name'
               name: 'Population Name'
               description: 'The name of the population used to generate the map.'
+
+    -   name: 'SIO'
+        label: 'The Semanticscience Integrated Ontology (SIO) provides a simple, integrated ontology of types and relations for rich description of objects, processes and their attributes.'
+        url: 'http://sio.semanticscience.org/'
+        idSpaces:
+            -   name: 'SIO'
+                description: "Semanticscience Integrated Ontology"
+                urlPrefix: "http://semanticscience.org/resource/{db}_{accession}"
+        terms:
+            -   id: 'SIO:000089'
+                name: 'dataset'
+                description: 'A dataset is a data item that is a collection of data items.'
