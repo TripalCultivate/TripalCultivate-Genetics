@@ -311,29 +311,29 @@ fields:
             default:
               region: content
 
-    -   name: genetic_map_dataset_file
-        content_type: genetic_map
-        label: Dataset File
-        type: file
-        description: "Unlimited number of files can be uploaded to this field. 50 MB limit. \nAllowed types: txt tsv csv xlsx xls."
-        cardinality: -1
-        required: false
-        storage_settings:
-            storage_plugin_id: chado_storage
-            storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
-        settings:
-            termIdSpace: TPUB
-            termAccession: '0000053'
-        display:
-          view:
-            default:
-              region: content
-              label: hidden
-          form:
-            default:
-              region: content
+    # -   name: genetic_map_dataset_file
+    #     content_type: genetic_map
+    #     label: Dataset File
+    #     type: file
+    #     description: "Unlimited number of files can be uploaded to this field. 50 MB limit. \nAllowed types: txt tsv csv xlsx xls."
+    #     cardinality: -1
+    #     required: false
+    #     storage_settings:
+    #         storage_plugin_id: chado_storage
+    #         storage_plugin_settings:
+    #             base_table: featuremap
+    #             prop_table: featuremapprop
+    #     settings:
+    #         termIdSpace: TPUB
+    #         termAccession: '0000053'
+    #     display:
+    #       view:
+    #         default:
+    #           region: content
+    #           label: hidden
+    #       form:
+    #         default:
+    #           region: content
 
     -   name: genetic_map_description
         content_type: genetic_map

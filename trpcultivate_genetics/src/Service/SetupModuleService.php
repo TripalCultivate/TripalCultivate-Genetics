@@ -9,7 +9,6 @@ use Drupal\tripal_chado\Services\ChadoTermsInit;
 use Drupal\tripal\Services\TripalEntityTypeCollection;
 use Drupal\tripal\Services\TripalFieldCollection;
 use Drupal\tripal_layout\Controller\TripalEntityUILayoutController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Service class for setting up the Tripal Cultivate Genetics module.
@@ -57,26 +56,6 @@ class SetupModuleService {
    * @var Drupal\tripal\Services\TripalFieldCollection
    */
   protected TripalFieldCollection $fieldCollection;
-
-  /**
-   * Factory method for the service container.
-   *
-   * @param Symfony\Component\DependencyInjection\ContainerInterface $container
-   *   The service container.
-   *
-   * @return static
-   *   An instance of this service.
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager'),
-      $container->get('tripal_chado.database'),
-      $container->get('tripal_chado.custom_tables'),
-      $container->get('tripal_chado.terms_init'),
-      $container->get('tripal.tripalentitytype_collection'),
-      $container->get('tripal.tripalfield_collection'),
-    );
-  }
 
   /**
    * Constructor for the service.
