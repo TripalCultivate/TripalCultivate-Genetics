@@ -4,6 +4,8 @@ description: 'Display for the genetic map content type.'
 layouts:
   - tripal_entity_type: "genetic_map"
     hidden:
+      - uid
+      - title
       - genetic_map_type
       - genetic_map_name
       - genetic_map_dbxref_ann
@@ -25,7 +27,7 @@ layouts:
           - "genetic_map_population_type"
           - "genetic_map_population_size"
           - "genetic_map_description"
-      - id: genetic_datasets
+      - id: genetic_dataset_section
         type: details
         label: "Associated Datasets"
         weight: 1
@@ -34,15 +36,15 @@ layouts:
         children:
           - "genetic_map_dataset"
           - "genetic_map_dataset_file"
-      - id: genetic_map_publication
+      - id: genetic_map_publication_section
         type: details
         label: "Publication"
         weight: 30
         show_empty: false
         open: true
         children:
-          - "genetic_map_publication"
-      - id: genetic_map_analysis
+          - "genetic_map_pub"
+      - id: genetic_map_analysis_section
         type: details
         label: "Analysis"
         weight: 60
@@ -50,3 +52,11 @@ layouts:
         open: true
         children:
           - "genetic_map_analysis"
+      - id: genetic_map_germpalsm_section
+        type: details
+        label: "Germplasm"
+        weight: 60
+        show_empty: false
+        open: true
+        children:
+          - "genetic_map_stock"
