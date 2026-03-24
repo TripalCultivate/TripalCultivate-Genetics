@@ -3,6 +3,8 @@
 namespace Drupal\trpcultivate_genetics\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\tripal_chado\Database\ChadoConnection;
 use Drupal\tripal_chado\Services\ChadoCustomTableManager;
 use Drupal\tripal_chado\Services\ChadoTermsInit;
@@ -169,8 +171,73 @@ class SetupModuleService {
     // Import the fields.
     $this->fieldCollection->install($collections);
 
+    // Create the additional fields.
+    $this->createAdditionalFields();
+
     // Apply the default layouts.
     $this->applyLayout();
+  }
+
+  /**
+   * Create Additional Drupal fields.
+   */
+  public function createAdditionalFields() {
+    $field_collection = [
+      'genetic_map' => [
+        'genetic_map_dataset_file' => [
+          'label' => 'Dataset File',
+          'termIdSpace' => 'TPUB',
+          'termAccession' => '0000053',
+        ],
+      ],
+    ];
+
+    foreach ($field_collection as $base_content_type => $fields2create) {
+      foreach ($fields2create as $field_id => $field_details) {
+
+        $field_storage = FieldStorageConfig::loadByName('tripal_entity', $field_id);
+        if (!$field_storage) {
+          FieldStorageConfig::create([
+            'field_name' => $field_id,
+            'entity_type' => 'tripal_entity',
+            'type' => 'file',
+            'cardinality' => -1,
+            'settings' => [
+              'target_type' => 'file',
+              'uri_scheme' => 'public',
+              'display_field' => FALSE,
+              'display_default' => FALSE,
+            ],
+          ])->save();
+        }
+
+        $field = FieldConfig::loadByName('tripal_entity', $base_content_type, $field_id);
+        if (!$field) {
+          $field = FieldConfig::create([
+            'field_name' => $field_id,
+            'entity_type' => 'tripal_entity',
+            'bundle' => $base_content_type,
+            'label' => $field_details['label'],
+            'cardinality' => -1,
+            'settings' => [
+              'uri_scheme' => 'public',
+              'file_directory' => "genetic-maps",
+              'file_extensions' => "txt tsv csv xlsx xls",
+              'max_filesize' => "50 MB",
+              'description_field' => FALSE,
+              'display_field' => FALSE,
+              'display_default' => FALSE,
+            ],
+          ]);
+        }
+
+        // Set the cvterm.
+        $field->setThirdPartySetting('tripal', 'termIdSpace', $field_details['termIdSpace']);
+        $field->setThirdPartySetting('tripal', 'termAccession', $field_details['termAccession']);
+        $field->save();
+      }
+    }
+
   }
 
   /**
