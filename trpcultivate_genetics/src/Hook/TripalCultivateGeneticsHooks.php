@@ -5,6 +5,7 @@ namespace Drupal\trpcultivate_genetics\Hook;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\tripal\Services\TripalLogger;
 
 /**
  * Implements hooks for TripalCultivate Genetics module.
@@ -12,6 +13,23 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class TripalCultivateGeneticsHooks {
 
   use StringTranslationTrait;
+
+  /**
+   * The TripalLogger service.
+   *
+   * @var Drupal\tripal\Services\TripalLogger
+   */
+  protected $logger;
+
+  /**
+   * Constructs a TripalCultivateGeneticsHooks object.
+   *
+   * @param Drupal\tripal\Services\TripalLogger $logger
+   *   The TripalLogger service.
+   */
+  public function __construct(TripalLogger $logger) {
+    $this->logger = $logger;
+  }
 
   /**
    * Implements hook_help().

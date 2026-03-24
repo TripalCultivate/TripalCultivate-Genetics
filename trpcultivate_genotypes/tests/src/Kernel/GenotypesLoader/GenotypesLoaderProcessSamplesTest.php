@@ -27,7 +27,7 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
    *
    * @var array
    */
-  protected static $modules = ['tripal_layout', 'trpcultivate_genetics','trpcultivate_genotypes'];
+  protected static $modules = ['file', 'tripal_layout', 'trpcultivate_genetics', 'trpcultivate_genotypes'];
 
 	/**
    * Configuration for trpcultivate_genetics module
