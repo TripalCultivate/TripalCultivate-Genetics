@@ -3,8 +3,6 @@ label: 'Genetic Map'
 description: 'Display for the genetic map content type.'
 layouts:
   - tripal_entity_type: genetic_map
-    hidden:
-      - genetic_map_contact
     field_groups:
       - id: genetic-map-section-core
         type: details

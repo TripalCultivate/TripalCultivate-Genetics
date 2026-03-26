@@ -226,8 +226,8 @@ fields:
                 linker_table: featuremap_contact
                 linker_fkey_column: contact_id
         settings:
-            termIdSpace: local
-            termAccession: contact
+            termIdSpace: NCIT
+            termAccession: C47954
         display:
           view:
             default:

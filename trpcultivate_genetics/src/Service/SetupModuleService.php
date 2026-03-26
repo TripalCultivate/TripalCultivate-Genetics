@@ -168,6 +168,9 @@ class SetupModuleService {
     // Import the content types.
     $this->entityTypeCollection->install($collections);
 
+    // Deletes the previously defined contact field.
+    $this->deleteContactField();
+
     // Import the fields.
     $this->fieldCollection->install($collections);
 
@@ -176,6 +179,16 @@ class SetupModuleService {
 
     // Apply the default layouts.
     $this->applyLayout();
+  }
+
+  /**
+   * Deletes the previously defined Contact Field.
+   */
+  public function deleteContactField() {
+    $field = FieldConfig::loadByName('tripal_entity', 'genetic_map', 'genetic_map_contact');
+    if ($field) {
+      $field->delete();
+    }
   }
 
   /**
