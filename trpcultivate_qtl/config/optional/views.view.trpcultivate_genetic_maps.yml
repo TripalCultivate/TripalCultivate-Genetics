@@ -2,6 +2,10 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.tripal_entity.genetic_map_author
+    - field.storage.tripal_entity.genetic_map_organism
+    - field.storage.tripal_entity.genetic_map_population_name
+    - field.storage.tripal_entity.genetic_map_year_published
     - system.menu.data-search
     - tripal.content_type.genetic_map
   module:
@@ -213,7 +217,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          # table
         genetic_map_author:
           id: genetic_map_author
           table: tripal_entity__genetic_map_author
@@ -717,4 +720,3 @@ display:
         - 'config:field.storage.tripal_entity.genetic_map_author'
         - 'config:field.storage.tripal_entity.genetic_map_organism'
         - 'config:field.storage.tripal_entity.genetic_map_population_name'
-
