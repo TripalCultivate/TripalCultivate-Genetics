@@ -5,6 +5,7 @@ namespace Drupal\trpcultivate_genetics\Hook;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\tripal\Services\TripalLogger;
 
 /**
  * Implements hooks for TripalCultivate Genetics module.
@@ -12,6 +13,23 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class TripalCultivateGeneticsHooks {
 
   use StringTranslationTrait;
+
+  /**
+   * The TripalLogger service.
+   *
+   * @var Drupal\tripal\Services\TripalLogger
+   */
+  protected $logger;
+
+  /**
+   * Constructs a TripalCultivateGeneticsHooks object.
+   *
+   * @param Drupal\tripal\Services\TripalLogger $logger
+   *   The TripalLogger service.
+   */
+  public function __construct(TripalLogger $logger) {
+    $this->logger = $logger;
+  }
 
   /**
    * Implements hook_help().
@@ -39,6 +57,74 @@ class TripalCultivateGeneticsHooks {
 
       default:
     }
+  }
+
+  /**
+   * Implements hook_config_schema_info_alter().
+   *
+   * Update the schema to support markup fields.
+   */
+  #[Hook('config_schema_info_alter')]
+  public function configSchemaInfoAlter(&$definitions) {
+
+    // Support for the File Field being used on a TripalEntity.
+    // -- field settings.
+    if (array_key_exists('field.field_settings.file', $definitions)) {
+      foreach ($definitions['field.field_settings.file']['mapping'] as $setting_key => $settings) {
+        $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping'][$setting_key] = $settings;
+      }
+    }
+    else {
+      $this->logger->error("Tripal Cultivate requires the File Field for it's content types but it seems to be missing as the 'field.field_settings.file' schema definition is unavailable.");
+    }
+    // -- field storage settings.
+    if (array_key_exists('field.storage_settings.file', $definitions)) {
+      foreach ($definitions['field.storage_settings.file']['mapping'] as $setting_key => $settings) {
+        $definitions['field.storage.tripal_entity.*']['mapping']['settings']['mapping'][$setting_key] = $settings;
+      }
+    }
+    else {
+      $this->logger->error("Tripal Cultivate requires the File Field for it's content types but it seems to be missing as the 'field.storage_settings.file' schema definition is unavailable.");
+    }
+    // Support for Third Party Tripal field settings being used on TripalEntity.
+    // @todo this should likely be in tripal core.
+    if (!array_key_exists('third_party_settings', $definitions['field.field.tripal_entity.*.*']['mapping'])) {
+      $definitions['field.field.tripal_entity.*.*']['mapping']['third_party_settings'] = [
+        'type' => 'mapping',
+        'mapping' => [],
+      ];
+    }
+    if (!array_key_exists('tripal', $definitions['field.field.tripal_entity.*.*']['mapping']['third_party_settings']['mapping'])) {
+      $definitions['field.field.tripal_entity.*.*']['mapping']['third_party_settings']['mapping']['tripal'] = [
+        'type' => 'mapping',
+        'mapping' => [],
+      ];
+    }
+    $definitions['field.field.tripal_entity.*.*']['mapping']['third_party_settings']['mapping']['tripal']['mapping']['termIdSpace'] = [
+      'type' => 'string',
+      'label' => 'Term ID Space',
+      'nullable' => TRUE,
+    ];
+    $definitions['field.field.tripal_entity.*.*']['mapping']['third_party_settings']['mapping']['tripal']['mapping']['termAccession'] = [
+      'type' => 'string',
+      'label' => 'Term Accession',
+      'nullable' => TRUE,
+    ];
+    $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping']['file_directory'] = [
+      'type' => 'string',
+      'label' => 'File directory',
+      'nullable' => TRUE,
+    ];
+    $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping']['file_extensions'] = [
+      'type' => 'string',
+      'label' => 'File extensions',
+      'nullable' => TRUE,
+    ];
+    $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping']['max_filesize'] = [
+      'type' => 'string',
+      'label' => 'Maximum Upload Size',
+      'nullable' => FALSE,
+    ];
   }
 
 }

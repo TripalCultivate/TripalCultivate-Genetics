@@ -1,0 +1,27 @@
+id: 'trpcultivate_genetic_terms'
+label: 'TripalCultivate Genetic Terms'
+description: 'Default terms used by the TripalCultivate Genetic collection of modules.'
+vocabularies:
+    -   name: 'local'
+        label: 'Locally created terms'
+        url: 'cv/lookup/local'
+        idSpaces:
+            -   name: 'local'
+                description: 'Terms created for this site'
+                urlPrefix: 'cv/lookup/{db}/{accession}'
+        terms:
+            - id: 'local:Population Name'
+              name: 'Population Name'
+              description: 'The name of the population used to generate the map.'
+
+    -   name: 'SIO'
+        label: 'The Semanticscience Integrated Ontology (SIO) provides a simple, integrated ontology of types and relations for rich description of objects, processes and their attributes.'
+        url: 'http://sio.semanticscience.org/'
+        idSpaces:
+            -   name: 'SIO'
+                description: "Semanticscience Integrated Ontology"
+                urlPrefix: "http://semanticscience.org/resource/{db}_{accession}"
+        terms:
+            -   id: 'SIO:000089'
+                name: 'dataset'
+                description: 'A dataset is a data item that is a collection of data items.'
