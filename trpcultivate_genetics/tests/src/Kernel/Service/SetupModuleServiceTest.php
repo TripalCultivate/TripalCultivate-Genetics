@@ -101,15 +101,15 @@ class SetupModuleServiceTest extends ChadoTestKernelBase {
   }
 
   /**
-   * Test the intallTerms method and installContentTypes method.
+   * Test the installTerms method and installContentTypes method.
    */
   public function testInstallMethods() {
     // Call the method to create the custom tables (i.e. featuremap_analysis).
     $this->setupService->createCustomTables();
 
     // Install terms defined in tripal.
-    $terms_setup = \Drupal::service('tripal_chado.terms_init');
-    $terms_setup->installTerms();
+    $this->container->get('tripal_chado.terms_init')
+      ->installTerms();
 
     // Install the terms defined in this module.
     $this->setupService->installTerms();
@@ -133,8 +133,24 @@ class SetupModuleServiceTest extends ChadoTestKernelBase {
     $field_manager = \Drupal::service('entity_field.manager');
     $field_defs = $field_manager->getFieldDefinitions('tripal_entity', 'genetic_map');
 
-    $fields = ['genetic_map_identifier', 'genetic_map_name', 'genetic_map_population_name',
-      'genetic_map_population_type', 'genetic_map_population_size', 'genetic_map_year_published', 'genetic_map_unit_type', 'genetic_map_type', 'genetic_map_author', 'genetic_map_organism', 'genetic_map_stock', 'genetic_map_dataset_file', 'genetic_map_dataset', 'genetic_map_pub', 'genetic_map_dbxref_ann', 'genetic_map_analysis', 'genetic_map_description',
+    $fields = [
+      'genetic_map_identifier',
+      'genetic_map_name',
+      'genetic_map_population_name',
+      'genetic_map_population_type',
+      'genetic_map_population_size',
+      'genetic_map_year_published',
+      'genetic_map_unit_type',
+      'genetic_map_type',
+      'genetic_map_author',
+      'genetic_map_organism',
+      'genetic_map_stock',
+      'genetic_map_dataset_file',
+      'genetic_map_dataset',
+      'genetic_map_pub',
+      'genetic_map_dbxref_ann',
+      'genetic_map_analysis',
+      'genetic_map_description',
     ];
 
     foreach ($fields as $field_id) {

@@ -75,7 +75,7 @@ class TripalCultivateGeneticsHooks {
       }
     }
     else {
-      $this->logger->error("Tripal Cultivate requires the File Field for it's content types but it seems to be missing as the 'field.field_settings.file' schema definition is unavailable.");
+      $this->logger->error("Tripal Cultivate Genetics module requires the File Field for its content types but it seems to be missing as the 'field.field_settings.file' schema definition is unavailable.");
     }
     // -- field storage settings.
     if (array_key_exists('field.storage_settings.file', $definitions)) {
@@ -84,7 +84,7 @@ class TripalCultivateGeneticsHooks {
       }
     }
     else {
-      $this->logger->error("Tripal Cultivate requires the File Field for it's content types but it seems to be missing as the 'field.storage_settings.file' schema definition is unavailable.");
+      $this->logger->error("Tripal Cultivate Genetics module requires the File Field for its content types but it seems to be missing as the 'field.storage_settings.file' schema definition is unavailable.");
     }
     // Support for Third Party Tripal field settings being used on TripalEntity.
     // @todo this should likely be in tripal core.
@@ -112,12 +112,12 @@ class TripalCultivateGeneticsHooks {
     ];
     $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping']['file_directory'] = [
       'type' => 'string',
-      'label' => 'File directory',
+      'label' => 'File Directory',
       'nullable' => TRUE,
     ];
     $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping']['file_extensions'] = [
       'type' => 'string',
-      'label' => 'File extensions',
+      'label' => 'File Extensions',
       'nullable' => TRUE,
     ];
     $definitions['field.field.tripal_entity.*.*']['mapping']['settings']['mapping']['max_filesize'] = [

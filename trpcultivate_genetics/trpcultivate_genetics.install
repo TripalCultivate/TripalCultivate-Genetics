@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Install file for the Tripal Cultivate Genetics module.
+ */
 
 function trpcultivate_genetics_install(): void {
 
