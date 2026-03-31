@@ -1,3 +1,6 @@
 services:
   trpcultivate_qtl.hooks:
     class: 'Drupal\trpcultivate_qtl\Hook\TripalCultivateQTLHooks'
+
+  trpcultivate_qtl.setup_module_service:
+    class: 'Drupal\trpcultivate_qtl\Service\TrpcultivateQtlSetupModuleService'

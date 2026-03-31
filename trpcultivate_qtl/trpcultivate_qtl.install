@@ -6,16 +6,13 @@ use Drupal\Core\Config\FileStorage;
  * Implements hook_install().
  */
 function trpcultivate_qtl_install() {
-  $dir = \Drupal::service('extension.list.module')->getPath('trpcultivate_qtl');
-  $fileStorage = new FileStorage($dir);
-  $config = $fileStorage->read('config/optional/views.view.trpcultivate_genetic_maps');
-
-  // Load the storage system for views entities and check if the view
-  // already exists. If it does then don't reload it.
-  $storage = \Drupal::service('entity_type.manager')->getStorage('view');
-  $view = $storage->load('trpcultivate_genetic_maps');
-  if (!$view) {
-    $view = $storage->create($config);
-    $view->save();
-  }
+  // Submit job to run the setup of the module.
+  $current_user = \Drupal::currentUser();
+  \Drupal::service('tripal.job')->create([
+    'job_name' => t("Setup Tripal Cultivate QTL Optional Views"),
+    'modulename' => 'trpcultivate_qtl',
+    'callback' => ['Drupal\trpcultivate_qtl\Service\TrpcultivateQtlSetupModuleService', 'importOptionalView'],
+    'arguments' => [],
+    'uid' => $current_user->id(),
+  ]);
 }
