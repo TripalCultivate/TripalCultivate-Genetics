@@ -442,7 +442,7 @@ display:
             identifier: species
             required: false
             remember: false
-            multiple: true
+            multiple: false
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
@@ -450,50 +450,18 @@ display:
               administrator: '0'
               data_generators: '0'
             placeholder: ''
-          is_grouped: true
+          is_grouped: false
           group_info:
-            label: Species
-            description: 'The species (e.g. Lens culinaris) of the population the genetic map was developed for.'
-            identifier: species
+            label: ''
+            description: ''
+            identifier: ''
             optional: true
             widget: select
             multiple: false
             remember: false
             default_group: All
             default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Lens culinaris'
-                operator: '='
-                value: 'Lens culinaris'
-              2:
-                title: 'Lens interspecific'
-                operator: '='
-                value: 'Lens interspecific'
-              3:
-                title: 'Lens orientalis'
-                operator: '='
-                value: 'Lens orientalis'
-              4:
-                title: 'Lens nigricans'
-                operator: '='
-                value: 'Lens nigricans'
-              5:
-                title: 'Lens ervoides'
-                operator: '='
-                value: 'Lens ervoides'
-              6:
-                title: 'Lens tomentosus'
-                operator: '='
-                value: 'Lens tomentosus'
-              7:
-                title: 'Lens odemensis'
-                operator: '='
-                value: 'Lens odemensis'
-              8:
-                title: 'Lens lamoteii'
-                operator: '='
-                value: 'Lens lamoteii'
+            group_items: {  }
         genetic_map_population_name_value:
           id: genetic_map_population_name_value
           table: tripal_entity__genetic_map_population_name
@@ -502,14 +470,14 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: string
-          operator: '='
+          operator: contains
           value: ''
           group: 1
           exposed: true
           expose:
             operator_id: genetic_map_population_name_value_op
             label: 'Population Name'
-            description: 'The name of the population (e.g. LR-66) the genetic map was developed for.'
+            description: 'The name of the population (e.g. LR-66) the genetic map was developed for (partial names supported).'
             use_operator: false
             operator: genetic_map_population_name_value_op
             operator_limit_selection: false
@@ -525,54 +493,18 @@ display:
               administrator: '0'
               data_generators: '0'
             placeholder: ''
-          is_grouped: true
+          is_grouped: false
           group_info:
-            label: Population
-            description: 'The name of the population (e.g. LR-66) the genetic map was developed for.'
-            identifier: population
+            label: ''
+            description: ''
+            identifier: ''
             optional: true
             widget: select
             multiple: false
             remember: false
             default_group: All
             default_group_multiple: {  }
-            group_items:
-              1:
-                title: LR-01
-                operator: '='
-                value: LR-01
-              2:
-                title: LR-06
-                operator: '='
-                value: LR-06
-              3:
-                title: LR-11
-                operator: '='
-                value: LR-11
-              4:
-                title: LR-18
-                operator: '='
-                value: LR-18
-              5:
-                title: LR-26
-                operator: '='
-                value: LR-26
-              6:
-                title: LR-66
-                operator: '='
-                value: LR-66
-              7:
-                title: LR-68
-                operator: '='
-                value: LR-68
-              8:
-                title: LR-70
-                operator: '='
-                value: LR-70
-              9:
-                title: LR-86
-                operator: '='
-                value: LR-86
+            group_items: {  }
         genetic_map_author_contact_name:
           id: genetic_map_author_contact_name
           table: tripal_entity__genetic_map_author
