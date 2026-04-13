@@ -214,10 +214,10 @@ fields:
 
     -   name: genetic_map_author
         content_type: genetic_map
-        label: Author
+        label: Primary Author
         type: chado_contact_by_role_type_default
-        description: The primary author of this genetic map.
-        cardinality: -1
+        description: The primary researcher who is responsible for this map. In cases where multiple researchers were involved, you want to choose the one who would be the first author on a paper describing this map.
+        cardinality: 1
         required: true
         storage_settings:
             storage_plugin_id: chado_storage
