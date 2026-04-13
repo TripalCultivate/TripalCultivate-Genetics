@@ -114,7 +114,7 @@ fields:
         content_type: genetic_map
         label: Year Published
         type: chado_property_type_default
-        description: The year this Genetic Map was published or made available.
+        description: The year this genetic map was published or made available.
         cardinality: 1
         required: false
         storage_settings:
