@@ -191,7 +191,7 @@ fields:
         content_type: genetic_map
         label: Unit Type
         type: chado_unit_type_default
-        description: A unit of measurement is a standardized quantity of a physical quality.
+        description: The unit of measurement used for the distance between the relative (e.g. cM) or physical (e.g. bp) positions of the genetic traits in the map.
         cardinality: 1
         required: false
         storage_settings:
