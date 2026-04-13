@@ -166,7 +166,7 @@ fields:
         content_type: genetic_map
         label: Population Size
         type: chado_property_type_default
-        description: The number of individuls in the population used to generate the map.
+        description: The number of individuals in the population used to generate the map.
         cardinality: 1
         required: false
         storage_settings:
