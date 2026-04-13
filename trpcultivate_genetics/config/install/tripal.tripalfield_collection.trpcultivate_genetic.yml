@@ -262,31 +262,6 @@ fields:
             default:
               region: content
 
-    -   name: genetic_map_stock
-        content_type: genetic_map
-        label: Germplasm
-        type: chado_stock_type_default
-        description: Any material sample taken from a biological entity for testing, diagnostic, propagation, treatment or research purposes, including a sample obtained from a living organism or taken from the biological object after halting of all its life functions.
-        cardinality: -1
-        required: false
-        storage_settings:
-            storage_plugin_id: chado_storage
-            storage_plugin_settings:
-                base_table: featuremap
-                linker_table: stock_featuremap
-                linker_fkey_column: stock_id
-        settings:
-            termIdSpace: 'NCIT'
-            termAccession: 'C70699'
-        display:
-          view:
-            default:
-              region: content
-              label: above
-          form:
-            default:
-              region: content
-
     -   name: genetic_map_dataset
         content_type: genetic_map
         label: Dataset

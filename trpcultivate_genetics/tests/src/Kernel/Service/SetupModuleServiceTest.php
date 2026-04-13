@@ -134,7 +134,7 @@ class SetupModuleServiceTest extends ChadoTestKernelBase {
     $field_defs = $field_manager->getFieldDefinitions('tripal_entity', 'genetic_map');
 
     $fields = ['genetic_map_identifier', 'genetic_map_name', 'genetic_map_population_name',
-      'genetic_map_population_type', 'genetic_map_population_size', 'genetic_map_year_published', 'genetic_map_unit_type', 'genetic_map_type', 'genetic_map_author', 'genetic_map_organism', 'genetic_map_stock', 'genetic_map_dataset_file', 'genetic_map_dataset', 'genetic_map_pub', 'genetic_map_dbxref_ann', 'genetic_map_analysis', 'genetic_map_description',
+      'genetic_map_population_type', 'genetic_map_population_size', 'genetic_map_year_published', 'genetic_map_unit_type', 'genetic_map_type', 'genetic_map_author', 'genetic_map_organism', 'genetic_map_dataset_file', 'genetic_map_dataset', 'genetic_map_pub', 'genetic_map_dbxref_ann', 'genetic_map_analysis', 'genetic_map_description',
     ];
 
     foreach ($fields as $field_id) {
