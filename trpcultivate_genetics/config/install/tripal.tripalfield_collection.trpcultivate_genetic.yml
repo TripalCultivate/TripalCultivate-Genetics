@@ -141,7 +141,7 @@ fields:
         content_type: genetic_map
         label: Population Type
         type: chado_property_type_default
-        description: The type of population used to generate a map (e.g. F2, BC1, RIL, ABC).
+        description: The type of population used to generate the map (e.g. F2, BC1, RIL, ABC).
         cardinality: 1
         required: false
         storage_settings:
