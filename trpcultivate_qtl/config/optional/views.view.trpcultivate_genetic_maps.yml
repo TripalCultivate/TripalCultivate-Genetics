@@ -103,7 +103,11 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: '{{ genetic_map_population_name }}<br>(<i>{{ genetic_map_organism }}</i>)'
+            text: >
+              {{ genetic_map_population_name }}
+              {% if genetic_map_organism %}
+                <br>(<i>{{ genetic_map_organism }}</i>)
+              {% endif %}
             make_link: false
             path: ''
             absolute: false
