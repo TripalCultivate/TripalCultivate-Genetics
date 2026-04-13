@@ -60,7 +60,7 @@ fields:
         content_type: genetic_map
         label: Name
         type: chado_string_type_default
-        description: The name of the item.
+        description: The name of the genetic map.
         cardinality: 1
         required: false
         storage_settings:
