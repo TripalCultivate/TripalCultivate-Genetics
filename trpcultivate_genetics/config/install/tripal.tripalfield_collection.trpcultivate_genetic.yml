@@ -87,7 +87,7 @@ fields:
         content_type: genetic_map
         label: Population Name
         type: chado_property_type_default
-        description: The name of the population used to generate the map. This should match the name of the population in the population if there is a discrepancy between that value and KnowPulse.
+        description: The name of the population used to generate the map. This should match exactly with the name of the population used when submitting the map for publication.
         cardinality: 1
         required: true
         storage_settings:
