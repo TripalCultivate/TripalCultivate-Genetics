@@ -20,7 +20,6 @@ layouts:
           - genetic_map_unit_type
           - genetic_map_author
           - genetic_map_organism
-          - genetic_map_stock
       - id: genetic-map-section-dataset
         label: "Dataset"
         weight: -20

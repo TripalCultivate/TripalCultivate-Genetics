@@ -52,11 +52,3 @@ layouts:
         open: true
         children:
           - "genetic_map_analysis"
-      - id: genetic_map_germpalsm_section
-        type: details
-        label: "Germplasm"
-        weight: 60
-        show_empty: false
-        open: true
-        children:
-          - "genetic_map_stock"

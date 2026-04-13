@@ -143,8 +143,6 @@ class SetupModuleServiceTest extends ChadoTestKernelBase {
       'genetic_map_unit_type',
       'genetic_map_type',
       'genetic_map_author',
-      'genetic_map_organism',
-      'genetic_map_stock',
       'genetic_map_dataset_file',
       'genetic_map_dataset',
       'genetic_map_pub',
