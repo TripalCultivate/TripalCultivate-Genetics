@@ -272,8 +272,11 @@ class SetupModuleService {
 
     // -- Set a number of properties to use the "Short Text" widget.
     $property_fields = [
-      'genetic_map_identifier', 'genetic_map_population_name',
-      'genetic_map_population_type', 'genetic_map_population_size', 'genetic_map_year_published',
+      'genetic_map_identifier',
+      'genetic_map_population_name',
+      'genetic_map_population_type',
+      'genetic_map_population_size',
+      'genetic_map_year_published',
       'genetic_map_analysis',
     ];
     foreach ($property_fields as $component_name) {
