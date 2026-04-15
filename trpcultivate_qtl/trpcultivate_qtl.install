@@ -1,7 +1,5 @@
 <?php
 
-use Drupal\Core\Config\FileStorage;
-
 /**
  * Implements hook_install().
  */

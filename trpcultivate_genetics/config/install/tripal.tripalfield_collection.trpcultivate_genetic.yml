@@ -9,7 +9,7 @@ fields:
         content_type: genetic_map
         label: Type
         type: chado_additional_type_type_default
-        description: An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in.
+        description: 'An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in.'
         cardinality: 1
         required: true
         storage_settings:
@@ -35,7 +35,7 @@ fields:
         content_type: genetic_map
         label: Identifier
         type: chado_property_type_default
-        description: This should follow the format YEAR-AUTHOR-POPULATION where the author should be the initials. For example, a map generated in 2019 by TA Haile on LR-01 would have an identifier of 2019-TAH-LR-01.
+        description: 'This should follow the format YEAR-AUTHOR-POPULATION where the author should be the initials. For example, a map generated in 2019 by TA Haile on LR-01 would have an identifier of 2019-TAH-LR-01.'
         cardinality: 1
         required: true
         storage_settings:
@@ -87,7 +87,7 @@ fields:
         content_type: genetic_map
         label: Population Name
         type: chado_property_type_default
-        description: The name of the population used to generate the map. This should match exactly with the name of the population used when submitting the map for publication.
+        description: 'The name of the population used to generate the map. This should match exactly with the name of the population used when submitting the map for publication.'
         cardinality: 1
         required: true
         storage_settings:
@@ -122,7 +122,7 @@ fields:
             storage_plugin_settings:
                 base_table: featuremap
                 prop_table: featuremapprop
-            max_length: 255
+            max_length: 4
         settings:
             termIdSpace: TPUB
             termAccession: '0000059'
@@ -191,7 +191,7 @@ fields:
         content_type: genetic_map
         label: Unit Type
         type: chado_unit_type_default
-        description: The unit of measurement used for the distance between the relative (e.g. cM) or physical (e.g. bp) positions of the genetic traits in the map.
+        description: 'The unit of measurement used for the distance between the relative (e.g. cM) or physical (e.g. bp) positions of the genetic traits in the map.'
         cardinality: 1
         required: false
         storage_settings:
@@ -216,7 +216,7 @@ fields:
         content_type: genetic_map
         label: Primary Author
         type: chado_contact_by_role_type_default
-        description: The primary researcher who is responsible for this map. In cases where multiple researchers were involved, you want to choose the one who would be the first author on a paper describing this map.
+        description: 'The primary researcher who is responsible for this map. In cases where multiple researchers were involved, you want to choose the one who would be the first author on a paper describing this map.'
         cardinality: 1
         required: true
         storage_settings:
@@ -241,7 +241,7 @@ fields:
         content_type: genetic_map
         label: Organism
         type: chado_organism_type_default
-        description: A material entity that is an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment. An organism may be unicellular or made up, like humans, of many billions of cells divided into specialized tissues and organs.
+        description: 'A material entity that is an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment. An organism may be unicellular or made up, like humans, of many billions of cells divided into specialized tissues and organs.'
         cardinality: -1
         required: false
         storage_settings:
