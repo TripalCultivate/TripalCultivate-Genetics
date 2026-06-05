@@ -245,8 +245,8 @@ class SetupModuleService {
         }
 
         // Set the cvterm.
-        $field->setThirdPartySetting('tripal', 'termIdSpace', $field_details['termIdSpace']);
-        $field->setThirdPartySetting('tripal', 'termAccession', $field_details['termAccession']);
+        $field->setSetting('tripal', 'termIdSpace', $field_details['termIdSpace']);
+        $field->setSetting('tripal', 'termAccession', $field_details['termAccession']);
         $field->save();
       }
     }
