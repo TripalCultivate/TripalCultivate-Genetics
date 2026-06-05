@@ -19,15 +19,3 @@ use Drupal\Core\Routing\RouteMatchInterface;
 function trpcultivate_genetics_help($route_name, RouteMatchInterface $route_match) {
   return \Drupal::service('trpcultivate_genetics.hooks')->help($route_name, $route_match);
 }
-
-/**
- * Implements hook_config_schema_info_alter().
- *
- * This legacy hook is only run for Drupal < 11, and is replaced by class
- * Drupal\trpcultivate_genetics\Hook\TripalCultivateGeneticsHooks in
- * trpcultivate_genetics/src/Hook/TripalCultivateGeneticsHooks.php.
- */
-#[LegacyHook]
-function trpcultivate_genetics_config_schema_info_alter(&$definitions) {
-  return \Drupal::service('trpcultivate_genetics.hooks')->configSchemaInfoAlter($definitions);
-}
