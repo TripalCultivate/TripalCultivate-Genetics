@@ -1,11 +1,6 @@
 services:
-  Drupal\tripal\Services\TripalLogger:
-    alias: 'tripal.logger'
-
   trpcultivate_genetics.hooks:
     class: 'Drupal\trpcultivate_genetics\Hook\TripalCultivateGeneticsHooks'
-    arguments:
-      - '@tripal.logger'
 
   trpcultivate_genetics.setup_module_service:
     class: 'Drupal\trpcultivate_genetics\Service\SetupModuleService'
