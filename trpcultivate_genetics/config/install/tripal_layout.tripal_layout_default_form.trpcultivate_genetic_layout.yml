@@ -2,29 +2,29 @@ id: 'trpcultivate_genetic_layout'
 label: 'Genetic Map'
 description: 'Display for the genetic map content type.'
 layouts:
-  - tripal_entity_type: genetic_map
+  - tripal_entity_type: 'genetic_map'
     field_groups:
-      - id: genetic-map-section-core
-        type: details
-        label: "Metadata"
+      - id: 'genetic-map-section-core'
+        type: 'details'
+        label: 'Metadata'
         weight: -30
         show_empty: false
         open: true
         children:
-          - genetic_map_identifier
-          - genetic_map_name
-          - genetic_map_population_name
-          - genetic_map_year_published
-          - genetic_map_population_type
-          - genetic_map_population_size
-          - genetic_map_unit_type
-          - genetic_map_author
-          - genetic_map_organism
-      - id: genetic-map-section-dataset
-        label: "Dataset"
+          - 'genetic_map_identifier'
+          - 'genetic_map_name'
+          - 'genetic_map_population_name'
+          - 'genetic_map_year_published'
+          - 'genetic_map_population_type'
+          - 'genetic_map_population_size'
+          - 'genetic_map_unit_type'
+          - 'genetic_map_author'
+          - 'genetic_map_organism'
+      - id: 'genetic-map-section-dataset'
+        label: 'Dataset'
         weight: -20
-        type: details
+        type: 'details'
         open: true
         children:
-          - genetic_map_dataset_file
-          - genetic_map_dataset
+          - 'genetic_map_dataset_file'
+          - 'genetic_map_dataset'

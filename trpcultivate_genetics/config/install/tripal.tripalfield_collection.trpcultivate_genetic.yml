@@ -5,382 +5,382 @@ fields:
 
 ## Genetic Map ##
 
-    -   name: genetic_map_type
-        content_type: genetic_map
-        label: Type
-        type: chado_additional_type_type_default
-        description: An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in.
+    -   name: 'genetic_map_type'
+        content_type: 'genetic_map'
+        label: 'Type'
+        type: 'chado_additional_type_type_default'
+        description: 'An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in.'
         cardinality: 1
         required: true
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                type_table: featuremapprop
-                type_column: type_id
+                base_table: 'featuremap'
+                type_table: 'featuremapprop'
+                type_column: 'type_id'
         settings:
-            termIdSpace: "data"
-            termAccession: "1278"
-            fixed_value: "data:1278"
+            termIdSpace: 'data'
+            termAccession: '1278'
+            fixed_value: 'data:1278'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_identifier
-        content_type: genetic_map
-        label: Identifier
-        type: chado_property_type_default
-        description: This should follow the format YEAR-AUTHOR-POPULATION where the author should be the initials. For example, a map generated in 2019 by TA Haile on LR-01 would have an identifier of 2019-TAH-LR-01.
+    -   name: 'genetic_map_identifier'
+        content_type: 'genetic_map'
+        label: 'Identifier'
+        type: 'chado_property_type_default'
+        description: 'This should follow the format YEAR-AUTHOR-POPULATION where the author should be the initials. For example, a map generated in 2019 by TA Haile on LR-01 would have an identifier of 2019-TAH-LR-01.'
         cardinality: 1
         required: true
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
+                base_table: 'featuremap'
+                prop_table: 'featuremapprop'
             max_length: 255
         settings:
-            termIdSpace: data
+            termIdSpace: 'data'
             termAccession: '0842'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_name
-        content_type: genetic_map
-        label: Name
-        type: chado_string_type_default
-        description: The name of the genetic map.
+    -   name: 'genetic_map_name'
+        content_type: 'genetic_map'
+        label: 'Name'
+        type: 'chado_string_type_default'
+        description: 'The name of the genetic map.'
         cardinality: 1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                base_column: name
+                base_table: 'featuremap'
+                base_column: 'name'
             max_length: 255
         settings:
-            termIdSpace: schema
-            termAccession: name
+            termIdSpace: 'schema'
+            termAccession: 'name'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
               weight: -28
           form:
             default:
-              region: content
+              region: 'content'
               weight: -28
 
-    -   name: genetic_map_population_name
-        content_type: genetic_map
-        label: Population Name
-        type: chado_property_type_default
-        description: The name of the population used to generate the map. This should match exactly with the name of the population used when submitting the map for publication.
+    -   name: 'genetic_map_population_name'
+        content_type: 'genetic_map'
+        label: 'Population Name'
+        type: 'chado_property_type_default'
+        description: 'The name of the population used to generate the map. This should match exactly with the name of the population used when submitting the map for publication.'
         cardinality: 1
         required: true
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
+                base_table: 'featuremap'
+                prop_table: 'featuremapprop'
             max_length: 255
         settings:
-            termIdSpace: NCIT
-            termAccession: C207467
+            termIdSpace: 'NCIT'
+            termAccession: 'C207467'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
               weight: -27
           form:
             default:
-              region: content
+              region: 'content'
               weight: -27
 
-    -   name: genetic_map_year_published
-        content_type: genetic_map
-        label: Year Published
-        type: chado_property_type_default
-        description: The year this genetic map was published or made available.
+    -   name: 'genetic_map_year_published'
+        content_type: 'genetic_map'
+        label: 'Year Published'
+        type: 'chado_property_type_default'
+        description: 'The year this genetic map was published or made available.'
         cardinality: 1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
+                base_table: 'featuremap'
+                prop_table: 'featuremapprop'
             max_length: 255
         settings:
-            termIdSpace: TPUB
+            termIdSpace: 'TPUB'
             termAccession: '0000059'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
               weight: -26
           form:
             default:
-              region: content
+              region: 'content'
               weight: -26
 
-    -   name: genetic_map_population_type
-        content_type: genetic_map
-        label: Population Type
-        type: chado_property_type_default
-        description: The type of population used to generate the map (e.g. F2, BC1, RIL, ABC).
+    -   name: 'genetic_map_population_type'
+        content_type: 'genetic_map'
+        label: 'Population Type'
+        type: 'chado_property_type_default'
+        description: 'The type of population used to generate the map (e.g. F2, BC1, RIL, ABC).'
         cardinality: 1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
+                base_table: 'featuremap'
+                prop_table: 'featuremapprop'
             max_length: 255
         settings:
-            termIdSpace: local
-            termAccession: Population Type
+            termIdSpace: 'local'
+            termAccession: 'Population Type'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_population_size
-        content_type: genetic_map
-        label: Population Size
-        type: chado_property_type_default
-        description: The number of individuals in the population used to generate the map.
+    -   name: 'genetic_map_population_size'
+        content_type: 'genetic_map'
+        label: 'Population Size'
+        type: 'chado_property_type_default'
+        description: 'The number of individuals in the population used to generate the map.'
         cardinality: 1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
+                base_table: 'featuremap'
+                prop_table: 'featuremapprop'
             max_length: 255
         settings:
-            termIdSpace: local
-            termAccession: Population Size
+            termIdSpace: 'local'
+            termAccession: 'Population Size'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_unit_type
-        content_type: genetic_map
-        label: Unit Type
-        type: chado_unit_type_default
-        description: The unit of measurement used for the distance between the relative (e.g. cM) or physical (e.g. bp) positions of the genetic traits in the map.
+    -   name: 'genetic_map_unit_type'
+        content_type: 'genetic_map'
+        label: 'Unit Type'
+        type: 'chado_unit_type_default'
+        description: 'The unit of measurement used for the distance between the relative (e.g. cM) or physical (e.g. bp) positions of the genetic traits in the map.'
         cardinality: 1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                type_table: featuremap
-                type_column: unittype_id
+                base_table: 'featuremap'
+                type_table: 'featuremap'
+                type_column: 'unittype_id'
         settings:
-            termIdSpace: UO
-            termAccession: "0000000"
+            termIdSpace: 'UO'
+            termAccession: '0000000'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_author
-        content_type: genetic_map
-        label: Primary Author
-        type: chado_contact_by_role_type_default
-        description: The primary researcher who is responsible for this map. In cases where multiple researchers were involved, you want to choose the one who would be the first author on a paper describing this map.
+    -   name: 'genetic_map_author'
+        content_type: 'genetic_map'
+        label: 'Primary Author'
+        type: 'chado_contact_by_role_type_default'
+        description: 'The primary researcher who is responsible for this map. In cases where multiple researchers were involved, you want to choose the one who would be the first author on a paper describing this map.'
         cardinality: 1
         required: true
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                linker_table: featuremap_contact
-                linker_fkey_column: contact_id
+                base_table: 'featuremap'
+                linker_table: 'featuremap_contact'
+                linker_fkey_column: 'contact_id'
         settings:
-            termIdSpace: NCIT
-            termAccession: C47954
+            termIdSpace: 'NCIT'
+            termAccession: 'C47954'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_organism
-        content_type: genetic_map
-        label: Organism
-        type: chado_organism_type_default
-        description: The scientific name of the population used in generating the map.
+    -   name: 'genetic_map_organism'
+        content_type: 'genetic_map'
+        label: 'Organism'
+        type: 'chado_organism_type_default'
+        description: 'The scientific name of the population used in generating the map.'
         cardinality: -1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                linker_table: featuremap_organism
-                linker_fkey_column: organism_id
+                base_table: 'featuremap'
+                linker_table: 'featuremap_organism'
+                linker_fkey_column: 'organism_id'
         settings:
-            termIdSpace: OBI
+            termIdSpace: 'OBI'
             termAccession: '0100026'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_dataset
-        content_type: genetic_map
-        label: Dataset
-        type: chado_property_type_default
-        description: Use this field to describe specific datasets that are part of this genetic map.
+    -   name: 'genetic_map_dataset'
+        content_type: 'genetic_map'
+        label: 'Dataset'
+        type: 'chado_property_type_default'
+        description: 'Use this field to describe specific datasets that are part of this genetic map.'
         cardinality: -1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                prop_table: featuremapprop
+                base_table: 'featuremap'
+                prop_table: 'featuremapprop'
         settings:
-            termIdSpace: SIO
+            termIdSpace: 'SIO'
             termAccession: '000089'
         display:
           view:
             default:
-              region: content
-              label: hidden
+              region: 'content'
+              label: 'hidden'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_description
-        content_type: genetic_map
-        label: Description
-        type: chado_text_type_default
-        description: A description of the item.
+    -   name: 'genetic_map_description'
+        content_type: 'genetic_map'
+        label: 'Description'
+        type: 'chado_text_type_default'
+        description: 'A description of the item.'
         cardinality: 1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                base_column: description
+                base_table: 'featuremap'
+                base_column: 'description'
         settings:
-            termIdSpace: schema
-            termAccession: description
+            termIdSpace: 'schema'
+            termAccession: 'description'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_pub
-        content_type: genetic_map
-        label: Publication
-        type: chado_pub_type_default
-        description: Associates a publication (e.g. journal article, conference proceedings, book chapter, etc.) with this record.
+    -   name: 'genetic_map_pub'
+        content_type: 'genetic_map'
+        label: 'Publication'
+        type: 'chado_pub_type_default'
+        description: 'Associates a publication (e.g. journal article, conference proceedings, book chapter, etc.) with this record.'
         cardinality: -1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                linker_table: featuremap_pub
-                linker_fkey_column: pub_id
+                base_table: 'featuremap'
+                linker_table: 'featuremap_pub'
+                linker_fkey_column: 'pub_id'
         settings:
-            termIdSpace: TPUB
-            termAccession: "0000002"
+            termIdSpace: 'TPUB'
+            termAccession: '0000002'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_dbxref_ann
-        content_type: genetic_map
-        label: Database Reference Annotations
-        type: chado_dbxref_type_default
-        description: The IDs where this record may be available in other external online databases.
+    -   name: 'genetic_map_dbxref_ann'
+        content_type: 'genetic_map'
+        label: 'Database Reference Annotations'
+        type: 'chado_dbxref_type_default'
+        description: 'The IDs where this record may be available in other external online databases.'
         cardinality: -1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                linker_table: featuremap_dbxref
-                linker_fkey_column: dbxref_id
+                base_table: 'featuremap'
+                linker_table: 'featuremap_dbxref'
+                linker_fkey_column: 'dbxref_id'
         settings:
-            termIdSpace: SBO
-            termAccession: "0000552"
+            termIdSpace: 'SBO'
+            termAccession: '0000552'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
 
-    -   name: genetic_map_analysis
-        content_type: genetic_map
-        label: Analysis
-        type: chado_analysis_type_default
-        description: Apply analytical methods to existing data of a specific type.
+    -   name: 'genetic_map_analysis'
+        content_type: 'genetic_map'
+        label: 'Analysis'
+        type: 'chado_analysis_type_default'
+        description: 'Apply analytical methods to existing data of a specific type.'
         cardinality: -1
         required: false
         storage_settings:
-            storage_plugin_id: chado_storage
+            storage_plugin_id: 'chado_storage'
             storage_plugin_settings:
-                base_table: featuremap
-                linker_table: featuremap_analysis
-                linker_fkey_column: analysis_id
+                base_table: 'featuremap'
+                linker_table: 'featuremap_analysis'
+                linker_fkey_column: 'analysis_id'
         settings:
-            termIdSpace: operation
-            termAccession: "2945"
+            termIdSpace: 'operation'
+            termAccession: '2945'
         display:
           view:
             default:
-              region: content
-              label: above
+              region: 'content'
+              label: 'above'
           form:
             default:
-              region: content
+              region: 'content'
