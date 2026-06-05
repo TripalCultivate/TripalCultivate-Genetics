@@ -97,8 +97,8 @@ fields:
                 prop_table: featuremapprop
             max_length: 255
         settings:
-            termIdSpace: local
-            termAccession: Population Name
+            termIdSpace: NCIT
+            termAccession: C207467
         display:
           view:
             default:
@@ -241,7 +241,7 @@ fields:
         content_type: genetic_map
         label: Organism
         type: chado_organism_type_default
-        description: A material entity that is an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment. An organism may be unicellular or made up, like humans, of many billions of cells divided into specialized tissues and organs.
+        description: The scientific name of the population used in generating the map.
         cardinality: -1
         required: false
         storage_settings:

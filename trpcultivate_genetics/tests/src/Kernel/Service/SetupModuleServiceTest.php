@@ -116,8 +116,8 @@ class SetupModuleServiceTest extends ChadoTestKernelBase {
 
     // Check if the terms are installed properly.
     $idsmanager = \Drupal::service('tripal.collection_plugin_manager.idspace');
-    $idSpace = $idsmanager->loadCollection('local');
-    $term_id = $idSpace->getTerm('Population Name');
+    $idSpace = $idsmanager->loadCollection('NCIT');
+    $term_id = $idSpace->getTerm('C207467');
     $this->assertNotNull($term_id, 'The terms are not installed properly.');
 
     // Import the content types defined in this module.

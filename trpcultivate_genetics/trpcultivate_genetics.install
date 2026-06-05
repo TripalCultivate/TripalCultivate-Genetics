@@ -9,7 +9,7 @@ function trpcultivate_genetics_install(): void {
   // Submit job to run the setup of the module.
   $current_user = \Drupal::currentUser();
   \Drupal::service('tripal.job')->create([
-    'job_name' => t("Setup Tripal Cultivate Genetics Terms"),
+    'job_name' => t("Setup Tripal Cultivate Genetics Terms, Content Types and Fields"),
     'modulename' => 'trpcultivate_genetics',
     'callback' => ['Drupal\trpcultivate_genetics\Service\SetupModuleService', 'runSetupModuleTripalJob'],
     'arguments' => [],
