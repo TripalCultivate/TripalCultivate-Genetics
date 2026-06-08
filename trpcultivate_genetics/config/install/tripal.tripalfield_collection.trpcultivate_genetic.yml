@@ -60,7 +60,7 @@ fields:
         content_type: 'genetic_map'
         label: 'Name'
         type: 'chado_string_type_default'
-        description: 'The name of the genetic map.'
+        description: 'The name of the genetic map. This should follow the format "POPULATION (MATERNAL PARENT x PATERNAL PARENT); AUTHOR et al., YEAR" where the author should be the last name followed by the first initial. For example, a map generated in 2019 by TA Haile on LR-01 would have a name of "LR-01 (ILL 1704 x CDC Robin); Haile TA et al., 2019".'
         cardinality: 1
         required: false
         storage_settings:
