@@ -14,7 +14,7 @@ permissions: read-all
 
 jobs:
   running-tests:
-    name: 'PHP 8.2 - Drupal 10.5.x-dev - PostgreSQL 18'
+    name: 'PHP 8.2 - Drupal 10.5.x - PostgreSQL 18'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout Repository'
@@ -25,7 +25,7 @@ jobs:
           directory-name: 'trpcultivate_genetics'
           modules: 'trpcultivate_genetics, trpcultivate_genomatrix, trpcultivate_genotypes, trpcultivate_qtl, trpcultivate_vcf'
           php-version: '8.2'
-          drupal-version: '10.5.x-dev'
+          drupal-version: '10.5.x'
           pgsql-version: '18'
           build-image: TRUE
           dockerfile: 'Dockerfile'
