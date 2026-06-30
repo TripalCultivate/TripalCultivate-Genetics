@@ -70,12 +70,12 @@ The following compatibility is proven via automated testing workflows.
 [MaintainabilityBadge]: https://api.codeclimate.com/v1/badges/fddbd06df5e320f09cd9/maintainability
 [TestCoverageBadge]: https://api.codeclimate.com/v1/badges/fddbd06df5e320f09cd9/test_coverage
 
-[Grid82-106-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.2_D10_6x.yml/badge.svg
-[Grid83-106-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.3_D10_6x.yml/badge.svg
-[Grid83-113-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.3_D11_3x.yml/badge.svg
-[Grid83-114-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.3_D11_4x.yml/badge.svg
-[Grid84-106-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.4_D10_6x.yml/badge.svg
-[Grid84-113-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.4_D11_3x.yml/badge.svg
-[Grid84-114-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.4_D11_4x.yml/badge.svg
-[Grid85-113-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.5_D11_3x.yml/badge.svg
-[Grid85-114-Badge]: https://github.com/trpcultivate_genetics/trpcultivate_genetics/actions/workflows/MAIN-phpunit-php8.5_D11_4x.yml/badge.svg
+[Grid82-106-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.2_D10_6x.yml/badge.svg
+[Grid83-106-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.3_D10_6x.yml/badge.svg
+[Grid83-113-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.3_D11_3x.yml/badge.svg
+[Grid83-114-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.3_D11_4x.yml/badge.svg
+[Grid84-106-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.4_D10_6x.yml/badge.svg
+[Grid84-113-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.4_D11_3x.yml/badge.svg
+[Grid84-114-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.4_D11_4x.yml/badge.svg
+[Grid85-113-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.5_D11_3x.yml/badge.svg
+[Grid85-114-Badge]: https://github.com/TripalCultivate/TripalCultivate-Genetics/actions/workflows/MAIN-phpunit-php8.5_D11_4x.yml/badge.svg
