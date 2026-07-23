@@ -4,8 +4,10 @@ namespace Drupal\trpcultivate_genotypes\GenotypesLoader;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\tripal\Services\TripalLogger;
+use Drupal\tripal_chado\ChadoBuddy\PluginManagers\ChadoBuddyPluginManager;
 use Drupal\tripal_chado\Database\ChadoConnection;
-use \Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\tripal_chado\Plugin\ChadoBuddy\ChadoOrganismBuddy;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -93,6 +95,20 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
   protected $connection;
 
   /**
+   * The Chado Buddy service manager.
+   *
+   * @var Drupal\tripal_chado\ChadoBuddy\PluginManagers\ChadoBuddyPluginManager
+   */
+  protected ChadoBuddyPluginManager $buddy_manager;
+
+  /**
+   * An instance of the organism Chado Buddy.
+   *
+   * @var Drupal\tripal_chado\Plugin\ChadoBuddy\ChadoOrganismBuddy
+   */
+  protected ChadoOrganismBuddy $organism_buddy;
+
+  /**
    * The service for retreiving configuration values.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -110,7 +126,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * @param array $configuration
    * @param string $plugin_id
    * @param mixed $plugin_definition
-   *
+   * 
    * @return static
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -120,6 +136,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
       $plugin_definition,
       $container->get('tripal.logger'),
       $container->get('tripal_chado.database'),
+      $container->get('tripal_chado.chado_buddy'),
       $container->get('config.factory')
     );
   }
@@ -137,12 +154,24 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
    * @param mixed $plugin_definition
    * @param Drupal\tripal\Services\TripalLogger $logger
    * @param Drupal\tripal_chado\Database\ChadoConnection $connection
+   * @param Drupal\tripal_chado\ChadoBuddy\PluginManagers\ChadoBuddyPluginManager $buddy_manager
+   *   The ChadoBuddy plugin manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, TripalLogger $logger, ChadoConnection $connection, ConfigFactoryInterface $config_factory) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    TripalLogger $logger,
+    ChadoConnection $connection,
+    ChadoBuddyPluginManager $buddy_manager,
+    ConfigFactoryInterface $config_factory,
+    ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->logger = $logger;
     $this->connection = $connection;
+    $this->buddy_manager = $buddy_manager;
+    $this->organism_buddy = $this->buddy_manager->createInstance('chado_organism_buddy', []);
     $this->config_factory = $config_factory;
   }
 
@@ -326,7 +355,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
         $organism_name = array_shift($current_line);
         if (!empty($organism_name)) {
           // Grab the organism ID using the organism name and genus supplied in the samples file
-          $organism_array = chado_get_organism_id_from_scientific_name($organism_name);
+          $organism_array = $this->organism_buddy->getOrganismFromScientificName($organism_name);
           //print_r($organism_array);
           if (!$organism_array) {
             throw new \Exception(
@@ -340,7 +369,7 @@ abstract class GenotypesLoaderPluginBase extends PluginBase implements Genotypes
               t("ERROR: Retrieved more than one organism ID for \"@organism_name\" when only 1 was expected.", ['@organism_name' => $organism_name])
             );
           }
-          $organism_id = $organism_array[0];
+          $organism_id = $organism_array[0]->getValue('organism.organism_id');
         }
       }
 
