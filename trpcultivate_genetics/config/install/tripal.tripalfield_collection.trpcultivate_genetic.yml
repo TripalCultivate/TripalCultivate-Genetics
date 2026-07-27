@@ -122,7 +122,7 @@ fields:
             storage_plugin_settings:
                 base_table: 'featuremap'
                 prop_table: 'featuremapprop'
-            max_length: 255
+            max_length: 4
         settings:
             termIdSpace: 'TPUB'
             termAccession: '0000059'

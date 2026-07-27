@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function trpcultivate_qtl_install() {
+  // Submit job to run the setup of the module.
+  $current_user = \Drupal::currentUser();
+  \Drupal::service('tripal.job')->create([
+    'job_name' => t("Setup Tripal Cultivate QTL Optional Views"),
+    'modulename' => 'trpcultivate_qtl',
+    'callback' => ['Drupal\trpcultivate_qtl\Service\TrpcultivateQtlSetupModuleService', 'importOptionalView'],
+    'arguments' => [],
+    'uid' => $current_user->id(),
+  ]);
+}
