@@ -2,7 +2,7 @@ name: 'Genetic Data API'
 type: 'module'
 description: 'Provides generic support for large-scale genotypic data, genetic maps, and QTL with importers, content pages and visualizations.'
 package: 'TripalCultivate: Genetics'
-core_version_requirement: '^10.5 || ^11.2'
+core_version_requirement: '^10.6 || ^11.3'
 dependencies:
   - 'tripal:tripal'
   - 'tripal:tripal_chado'

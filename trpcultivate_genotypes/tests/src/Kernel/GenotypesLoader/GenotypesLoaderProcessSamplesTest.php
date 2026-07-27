@@ -87,8 +87,20 @@ class GenotypesLoaderProcessSamplesTest extends ChadoTestKernelBase {
 		// Configuration should be any key value pairs specific to Genotypes Loader plugin
 		$configuration = [];
 		$plugin_definition = [];
+
+		// Buddy Manager.
+    $buddy_manager = \Drupal::getContainer()->get('tripal_chado.chado_buddy');
+
 		$logger = \Drupal::service('tripal.logger');
-		$this->plugin = new GenotypesLoaderFakePlugin($configuration,"fake_genotypes_loader",$plugin_definition,$logger,$this->connection,$config_factory);
+		$this->plugin = new GenotypesLoaderFakePlugin(
+			$configuration,
+			"fake_genotypes_loader",
+			$plugin_definition,
+			$logger,
+			$this->connection,
+			$buddy_manager,
+			$config_factory
+		);
 		$this->assertIsObject($this->plugin, 'Unable to create a Plugin');
 		$this->assertInstanceOf(GenotypesLoaderInterface::class, $this->plugin,"Returned object is not an instance of GenotypesLoaderInterface.");
 	}
